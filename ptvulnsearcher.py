@@ -18,7 +18,26 @@ class ptvulnsearcher:
 
     def run(self):
         if self.args.search or self.args.cve:
-            print(search_cve(self.args.search, self.args.cve))
+            vulns = search_cve(self.args.search, self.args.cve)
+            if self.args.json:
+                print(vulns)
+            else:
+                vulns = json.loads(vulns)
+                for vuln in vulns:
+                    cve = vuln["cve"]
+                    desc = vuln["description"]
+                    score = vuln["cvss_score"] if vuln["cvss_score"] else "Not defined"
+                    vector = vuln["cvss_string"] if vuln["cvss_string"] else "Not defined"
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f" ", "", self.use_json))
+                    ptmisclib.ptprint_(ptmisclib.out_title_ifnot(
+                        f"CVE: {cve}", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f"Description: {desc}", "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f"CVSS Score: {score}", "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f"CVSS Vector: {vector}", "", self.use_json))
             sys.exit(0)
         ptmisclib.ptprint_(ptmisclib.out_if(
             self.ptjsonlib.get_all_json(), "", self.use_json))
@@ -46,7 +65,7 @@ def search_cve(search_string, search_cve):
     response = requests.get(api_url, params=parameters)
     response_json = response.json()
 
-    return json.dumps(response_json, indent=2)
+    return json.dumps(response_json['data'], indent=2)
 
 
 def parse_args():
