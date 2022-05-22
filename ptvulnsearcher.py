@@ -23,6 +23,8 @@ class ptvulnsearcher:
                 print(vulns)
             else:
                 vulns = json.loads(vulns)
+                ptmisclib.ptprint_(ptmisclib.out_ifnot(
+                    f"Found {len(vulns)} CVE Records", "INFO", self.use_json))
                 for vuln in vulns:
                     cve = vuln["cve"]
                     desc = vuln["description"]
@@ -31,13 +33,13 @@ class ptvulnsearcher:
                     ptmisclib.ptprint_(
                         ptmisclib.out_ifnot(f" ", "", self.use_json))
                     ptmisclib.ptprint_(ptmisclib.out_title_ifnot(
-                        f"CVE: {cve}", self.use_json))
+                        f"{cve}", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f"Description: {desc}", "", self.use_json))
+                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Description:", color="TITLE")} {desc}', "", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f"CVSS Score: {score}", "", self.use_json))
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Score:", color="TITLE")} {score}', "", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f"CVSS Vector: {vector}", "", self.use_json))
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Vector:", color="TITLE")} {vector}', "", self.use_json))
             sys.exit(0)
         ptmisclib.ptprint_(ptmisclib.out_if(
             self.ptjsonlib.get_all_json(), "", self.use_json))
@@ -45,7 +47,8 @@ class ptvulnsearcher:
 
 def get_help():
     return [
-        {"description": ["ptvulnsearcher"]},
+        {"description": [
+            "Tool for searching CVE (Common Vulnerabilities and Exposures)"]},
         {"usage": ["ptvulnsearcher <options>"]},
         {"usage_example": [
             "ptvulnsearcher -s Apache v2.2",
@@ -54,7 +57,8 @@ def get_help():
             ["-s", "--search", "<search>", "Search keywords"],
             ["-cve", "--cve", "<cve>", "Search specific CVE"],
             ["-j",  "--json", "",  "Output in JSON format"],
-            ["-h", "--help", "", "Show this help message and exit"]
+            ["-v",  "--version", "", "Show script version and exit"],
+            ["-h", "--help", "", "Show this help message and exit"],
         ]
         }]
 
