@@ -168,10 +168,11 @@ class DataCollector:
         db_connection.close()
 
 
-
+"""
 #An instance of 'DataCollector' class
 instance = DataCollector()
 
 #Calling class methods
 instance.csv_file_reader()
 instance.cve_api_requests()
+"""
