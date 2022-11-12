@@ -21,9 +21,44 @@ class DataCollector:
             conn.autocommit = True
             print("Connected")
             return conn
-        except:
-            print("Connection failed")
+        except Exception as e:
+            print("Connection failed\n")
+            print(e)
+    
+    def create_tables(self):
+        try:
+            db_connection = self.connection()
+            tables_creation_cursor = db_connection.cursor()
+            tables_creation_cursor.execute(
+                """
+                DROP TABLE IF EXISTS public.cve, public.vendor;
+                
+                CREATE TABLE public."cve"
+                (
+                    id SERIAL PRIMARY KEY,
+                    cve_id VARCHAR(17),           
+                    cwe_id VARCHAR(15),		  	
+                    cvss_vector VARCHAR(40),     
+                    description TEXT         
+                    
+                );
 
+                CREATE TABLE public."vendor"
+                (
+                    product_id SERIAL PRIMARY KEY,
+                    cve_id VARCHAR(17),
+                    vendor TEXT,                    
+                    product_type VARCHAR(11),              
+                    product_name TEXT,           
+                    version VARCHAR(8)       
+                );
+                """)
+            tables_creation_cursor.close()
+            db_connection.close()
+            print("Tables were succesfully created")
+        except Exception as e:
+            print("Creation/Drop failed\n")
+            print(e)
 
 
     def csv_file_reader(self):
@@ -168,11 +203,12 @@ class DataCollector:
         db_connection.close()
 
 
-"""
+
 #An instance of 'DataCollector' class
 instance = DataCollector()
 
 #Calling class methods
-instance.csv_file_reader()
-instance.cve_api_requests()
-"""
+instance.create_tables()
+#instance.csv_file_reader()
+#instance.cve_api_requests()
+
