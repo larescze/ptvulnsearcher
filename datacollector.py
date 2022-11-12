@@ -26,6 +26,7 @@ class DataCollector:
             print(e)
     
     def create_tables(self):
+        """Function responsible for creation of tables within the database"""
         try:
             db_connection = self.connection()
             tables_creation_cursor = db_connection.cursor()
@@ -53,12 +54,13 @@ class DataCollector:
                     version VARCHAR(8)       
                 );
                 """)
-            tables_creation_cursor.close()
-            db_connection.close()
             print("Tables were succesfully created")
         except Exception as e:
             print("Creation/Drop failed\n")
             print(e)
+        finally:
+            tables_creation_cursor.close()
+            db_connection.close()
 
 
     def csv_file_reader(self):
@@ -204,11 +206,11 @@ class DataCollector:
 
 
 
-#An instance of 'DataCollector' class
+"""#An instance of 'DataCollector' class
 instance = DataCollector()
 
 #Calling class methods
 instance.create_tables()
-#instance.csv_file_reader()
-#instance.cve_api_requests()
+instance.csv_file_reader()
+instance.cve_api_requests()"""
 
