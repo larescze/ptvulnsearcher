@@ -39,7 +39,8 @@ class DataCollector:
                     id SERIAL PRIMARY KEY,
                     cve_id VARCHAR(17),           
                     cwe_id VARCHAR(15),		  	
-                    cvss_vector VARCHAR(40),     
+                    cvss_vector VARCHAR(40),
+                    cvss_score FLOAT,     
                     description TEXT         
                     
                 );
