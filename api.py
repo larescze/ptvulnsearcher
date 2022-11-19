@@ -38,7 +38,7 @@ resources_fields = {
 class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
     def get(self, id):
-        result = cveModel.query(cveModel).filter(id == cveModel.cve_id)
+        result = cveModel.query(cveModel).filter_by(id == cveModel.cve_id)
         return result
 
 #Registering resources
@@ -47,4 +47,5 @@ api.add_resource(resources, "/<cve_id>")
 
 #Instantiation
 app.run(debug=True)
-res = resources().get("CVE-1999-0001")
+res = resources()
+res.get()
