@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 database = SQLAlchemy(app)
 
 #Models
-class CveTableModel(database.Model): #Receipe class in the video
+class cveModel(database.Model): #Receipe class in the video
     id = database.Column(database.Integer(),primary_key=True)
     cve_id = database.Column(database.String(17), nullable = False)
     cwe_id = database.Column(database.String(15), nullable = True)
@@ -21,16 +21,8 @@ class CveTableModel(database.Model): #Receipe class in the video
     description = database.Column(database.Text, nullable = True)
 
     def __repr__(self):
-        return f"Record(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id})"
+        return f"resources(id = {id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
 
-"""
-class vendorTable(database.Model):
-    product_id = database.Column(database.Integer(),primary_key=True)
-    cve_id = database.Column(database.String(17), nullable = False)
-    vendor = database.Column(database.Text, nullable = True)
-    product_type = database.Column(database.String(11), nullable = True)
-    product_name = database.Column(database.Text, nullable = True)
-    version = database.Column(database.String(8), nullable = True)"""
 
 #Serilization
 resources_fields = {
@@ -40,22 +32,19 @@ resources_fields = {
     "cvss_vector":fields.String,
     "cvss_score":fields.Float,
     "description":fields.String
-
 }
 
 #Resources
 class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
-    def get(self, cve_id):
-        result = CveTableModel.query.get(cve_id = CveTableModel.cve_id)
+    def get(self, id):
+        result = cveModel.query(cveModel).filter(id == cveModel.cve_id)
         return result
 
-
-
 #Registering resources
-api.add_resource(resources, "/<String:cve_id>")
+api.add_resource(resources, "/<cve_id>")
 
 
-
-
+#Instantiation
 app.run(debug=True)
+res = resources().get("CVE-1999-0001")
