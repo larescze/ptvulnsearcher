@@ -1,3 +1,4 @@
+from os import abort
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
@@ -12,8 +13,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 database = SQLAlchemy(app)
 
 #Models
-class cveModel(database.Model): #Receipe class in the video
-    id = database.Column(database.Integer(),primary_key=True)
+class cve(database.Model): #Receipe class in the video
+    id = database.Column(database.Integer(), primary_key=True)
     cve_id = database.Column(database.String(17), nullable = False)
     cwe_id = database.Column(database.String(15), nullable = True)
     cvss_vector = database.Column(database.String(40), nullable = True)
@@ -21,7 +22,7 @@ class cveModel(database.Model): #Receipe class in the video
     description = database.Column(database.Text, nullable = True)
 
     def __repr__(self):
-        return f"resources(id = {id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
+        return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
 
 
 #Serilization
@@ -37,9 +38,12 @@ resources_fields = {
 #Resources
 class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
-    def get(self, id):
-        result = cveModel.query(cveModel).filter_by(id == cveModel.cve_id)
-        return result
+    def get(self, cve_id):
+        result = cve.query.get(cve_id)
+        if result:
+            return result.info()
+        else:
+            abort(404)
 
 #Registering resources
 api.add_resource(resources, "/<cve_id>")
