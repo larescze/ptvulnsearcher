@@ -41,8 +41,7 @@ class DataCollector:
                     cwe_id VARCHAR(15),		  	
                     cvss_vector VARCHAR(40),
                     cvss_score FLOAT,     
-                    description TEXT         
-                    
+                    description TEXT  
                 );
 
                 CREATE TABLE public."vendor"
@@ -52,7 +51,7 @@ class DataCollector:
                     vendor TEXT,                    
                     product_type VARCHAR(11),              
                     product_name TEXT,           
-                    version VARCHAR(8)       
+                    version VARCHAR(8)  
                 );
                 """)
             print("Tables were succesfully created")
@@ -207,11 +206,11 @@ class DataCollector:
 
 
 
-"""#An instance of 'DataCollector' class
+#An instance of 'DataCollector' class
 instance = DataCollector()
 
 #Calling class methods
 instance.create_tables()
 instance.csv_file_reader()
-instance.cve_api_requests()"""
+instance.cve_api_requests()
 
