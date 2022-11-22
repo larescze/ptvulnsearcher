@@ -23,7 +23,7 @@ class cve(database.Model): #Receipe class in the video
     cvss_score = database.Column(database.Float, nullable = True)
     description = database.Column(database.Text, nullable = True)
 
-    parent = database.relationship("vendor", back_populates="child")
+    parent  = database.relationship("vendor", back_populates="child")
     
    
 
@@ -74,7 +74,7 @@ class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
     def get(self,id):
         data = database.session.query(cve, vendor).filter(cve.id == id).join(vendor, cve.cve_id == vendor.cve_id)
-        result = database.query(data,id)
+        result = data.query(id)
         if result:
             return result
         else:
