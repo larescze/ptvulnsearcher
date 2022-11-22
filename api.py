@@ -28,7 +28,7 @@ class cve(database.Model): #Receipe class in the video
    
 
     def __repr__(self):
-        return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description} product_id={vendor.product_id})"
+        return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description} product_id={vendor.product_id}, cve_id={vendor.cve_id}, vendor={vendor.vendor}, product_type={vendor.product_type}, product_name={vendor.product_name}, version={vendor.version})"
         #return f"resources(cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
 
 class vendor(database.Model):
@@ -73,8 +73,8 @@ class resources(Resource):
 class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
     def get(self,id):
-        data = database.session.get(cve, vendor).filter(cve.id == id).join(vendor, cve.cve_id == vendor.cve_id)
-        result = [data.json(get)for get in data.query.all()]
+        data = database.session.query(cve, vendor).filter(cve.id == id).join(vendor, cve.cve_id == vendor.cve_id)
+        result = database.query(data,id)
         if result:
             return result
         else:
