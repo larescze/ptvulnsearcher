@@ -14,7 +14,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 database = SQLAlchemy(app)
 
 #Models
-class cve(database.Model): #Receipe class in the video
+class Cve(database.Model): #Receipe class in the video
     __tablename__ = "cve"
     id = database.Column(database.Integer(), primary_key=True)
     cve_id = database.Column(database.String(17), nullable =True)
@@ -23,15 +23,13 @@ class cve(database.Model): #Receipe class in the video
     cvss_score = database.Column(database.Float, nullable = True)
     description = database.Column(database.Text, nullable = True)
 
-    parent  = database.relationship("vendor", back_populates="child")
+    vendors = database.relationship("Vendor", backref="cve")
     
-   
-
     def __repr__(self):
         return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description} product_id={vendor.product_id}, cve_id={vendor.cve_id}, vendor={vendor.vendor}, product_type={vendor.product_type}, product_name={vendor.product_name}, version={vendor.version})"
         #return f"resources(cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
 
-class vendor(database.Model):
+class Vendor(database.Model):
     __tablename__ = "vendor"
     product_id = database.Column(database.Integer(), primary_key = True)
     cve_id = database.Column(database.String(17), database.ForeignKey("cve.cve_id"), nullable = True)
@@ -40,7 +38,6 @@ class vendor(database.Model):
     product_name = database.Column(database.Text, nullable = True)
     version = database.Column(database.String(8), nullable = True)
 
-    child = database.relationship("cve", back_populates="parent")
 
 
 #Serilization
