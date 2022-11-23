@@ -16,17 +16,18 @@ database = SQLAlchemy(app)
 #Models
 class Cve(database.Model): #Receipe class in the video
     __tablename__ = "cve"
-    id = database.Column(database.Integer(), primary_key=True)
-    cve_id = database.Column(database.String(17), nullable =True)
+    id = database.Column(database.Integer(), nullable=True)
+    cve_id = database.Column(database.String(17), primary_key = True, nullable =True)
     cwe_id = database.Column(database.String(15), nullable = True)
     cvss_vector = database.Column(database.String(40), nullable = True)
     cvss_score = database.Column(database.Float, nullable = True)
     description = database.Column(database.Text, nullable = True)
-
+    
+    #Defining relationship
     vendors = database.relationship("Vendor", backref="cve")
     
     def __repr__(self):
-        return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description} product_id={vendor.product_id}, cve_id={vendor.cve_id}, vendor={vendor.vendor}, product_type={vendor.product_type}, product_name={vendor.product_name}, version={vendor.version})"
+        return f"resources(id = {self.id}, cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description} product_id={Vendor.product_id}, cve_id={Vendor.cve_id}, vendor={Vendor.vendor}, product_type={Vendor.product_type}, product_name={Vendor.product_name}, version={Vendor.version})"
         #return f"resources(cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}.description={self.description})"
 
 class Vendor(database.Model):
@@ -48,7 +49,6 @@ resources_fields = {
     "cvss_vector":fields.String,
     "cvss_score":fields.Float,
     "description":fields.String,
-
     "product_id":fields.Integer,
     "cve_id":fields.String,
     "vendor":fields.String,
@@ -57,29 +57,20 @@ resources_fields = {
     "version":fields.String
 }
 
-"""#Resources
+#Resources
 class resources(Resource):
     @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
-    def get(self, id):
-        result = cve.query.get(id)
-        if result:
-            return result
-        else:
-            abort(404)"""
-
-class resources(Resource):
-    @marshal_with(resources_fields)#Serilize the returned object according to 'resource_fields'
-    def get(self,id):
-        data = database.session.query(cve, vendor).filter(cve.id == id).join(vendor, cve.cve_id == vendor.cve_id)
-        result = data.query(id)
+    def get(self, cve_id):
+        result = Cve.query.join(Vendor).filter(Vendor.cve_id == cve_id).all()
         if result:
             return result
         else:
             abort(404)
 
 
+
 #Registering resources
-api.add_resource(resources, "/<id>")
+api.add_resource(resources, "/api/<cve_id>")
 
 
 #Instantiation
@@ -87,6 +78,3 @@ app.run(debug=True)
 res = resources()
 res.get()
 
-
-
-#For vendor 
