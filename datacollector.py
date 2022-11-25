@@ -36,22 +36,24 @@ class DataCollector:
                 
                 CREATE TABLE public."cve"
                 (
-                    id SERIAL PRIMARY KEY,
+                    id BIGSERIAL PRIMARY KEY,
                     cve_id VARCHAR(17),           
                     cwe_id VARCHAR(15),		  	
                     cvss_vector VARCHAR(40),
                     cvss_score FLOAT,     
-                    description TEXT  
+                    description TEXT
                 );
 
                 CREATE TABLE public."vendor"
                 (
                     product_id SERIAL PRIMARY KEY,
+                    cveid BIGSERIAL,
                     cve_id VARCHAR(17),
                     vendor TEXT,                    
                     product_type VARCHAR(11),              
                     product_name TEXT,           
-                    version VARCHAR(8)  
+                    version VARCHAR(8),
+                    FOREIGN KEY (cveid) REFERENCES cve(id)
                 );
                 """)
             print("Tables were succesfully created")
