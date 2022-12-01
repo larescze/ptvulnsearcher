@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey
+from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship, Session
@@ -65,14 +65,71 @@ class Vendor(Base):
   
 
     
-@app.route("/api/<string:cve_id>")
+@app.route("/api/cve/<string:cve_id>")
 def query_based_on_cve_id(cve_id):
     with Session(engine) as session:
-
-        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Cve.cve_id == cve_id)
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.cve_id == cve_id)
         for row in session.execute(statement):
-            return(json.dumps(dict(row), sort_keys=True, indent=4, separators=(",\n",": ")))
+            result.append(dict(row))
+        return jsonify(result)
 
+
+
+
+@app.route("/api/vendor/<string:vendor>")
+@app.route("/api/vendor/<string:vendor>/product/<string:product_name>")
+@app.route("/api/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
+@app.route("/api/product/<string:product_name>")
+@app.route("/api/product/<string:product_name>/version/<string:version>")
+
+def query_based_on_product_name(vendor = "", product_name = "", version=""):
+    result = []
+    with Session(engine) as session:
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(or_(Vendor.vendor == vendor, Vendor.product_name == product_name, Vendor.version == version))
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""@app.route("/api/vendor/<string:vendor>") #<string:vendor(name of the vendor)>
+def query_based_on_vendors_name(vendor):
+    result = []
+    with Session(engine) as session:
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
+        
+@app.route("/api/vendor/product/name/version<string:version>")
+def query_based_on_products_version(version):
+    result = []
+    with Session(engine) as session:
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.version == version)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)"""
+
+
+
+       
+            
 
 
 
