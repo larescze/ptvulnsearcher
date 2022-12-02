@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_
+from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_, and_
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship, Session
@@ -83,10 +83,18 @@ def query_based_on_cve_id(cve_id):
 @app.route("/api/product/<string:product_name>")
 @app.route("/api/product/<string:product_name>/version/<string:version>")
 
-def query_based_on_product_name(vendor = "", product_name = "", version=""):
+def query_based_on_product_name(vendor = None, product_name = None, version=None):
     result = []
     with Session(engine) as session:
-        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(or_(Vendor.vendor == vendor, Vendor.product_name == product_name, Vendor.version == version))
+        if vendor != None:
+            statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where((Vendor.vendor == vendor))
+        elif (vendor and product_name) != None:
+            statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(and_(Vendor.vendor == vendor, Vendor.product_name == product_name))
+        elif(vendor and product_name and version) != None:
+            statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(and_(Vendor.vendor == vendor, Vendor.product_name == product_name, Vendor.version == version))
+        elif(product_name) != None:
+            statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name == product_name)
+        
         for row in session.execute(statement):
             result.append(dict(row))
         return jsonify(result)
