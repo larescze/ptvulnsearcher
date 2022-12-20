@@ -60,6 +60,14 @@ def get_help():
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
+
+            ["-v", "--vendor", "<vendor_name>", "Search specific CVE record by vendor name"],
+            ["-vp", "--vendor & product", "<vendor_name>,<product_name>", "Search specific CVE record by vendor name & product name"],
+            ["-vpv", "--vendro & product & version", "<vendor_name>,<product_name>,<product_version>", "Search specific CVE record by vendor name, product name and version"],
+            ["-p", "--product", "<product_name>", "Search specific CVE record by product name"],
+            ["-pv", "--product & version", "<product_name>,<product_version>", "Search specific CVE record by product name & version"],
+            
+
         ]
         }]
 
