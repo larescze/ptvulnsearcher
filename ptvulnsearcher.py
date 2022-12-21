@@ -61,13 +61,10 @@ def get_help():
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
-            ["-v", "--vendor", "<vendor_name>", "Search CVE record based on vendor name"],
-            ["-vp", "--vendor_product", "<vendor_name>","<product_name>", "Search CVE record based on vendor name & product name"],
-            ["-vpv", "--vendor_product_version", "<vendor_name>","<product_name>","<product_version>", "Search CVE record based on vendor name, product name and version"],
-            ["-p", "--product", "<product_name>", "Search CVE record based on product name"],
-            ["-pv", "--product_version", "<product_name>","<product_version>", "Search CVE record based on product name & version"],
-            
 
+            ["-v", "--vendor", "<vendor_name>", "Search CVE record based on vendor name"],
+            ["-p", "--product", "<product_name>", "Search CVE record based on product name"],
+            ["-ver", "--version", "<product_version>", "Search CVE record based on version"],
         ]
         }]
 
@@ -89,15 +86,18 @@ def parse_args():
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)
-    parser.add_argument("-v", "--vendor", action="vendor", type=vendor)
-    parser.add_argument("-vp", "--vendor_product", action="vendor_productname", type=vendor_productname)
-    parser.add_argument("-vpv", "--vendor_product_version", action="vendor_productname_version", type=vendor_productname_version) 
-    parser.add_argument("-p", "--product", action="product_name", type=product_name()) 
-    parser.add_argument("-pv", "--product_version", action="productname_version", type=productname_version()) 
+    parser.add_argument("-v", "--vendor", action="store_true", type=str)
+    parser.add_argument("-p", "--product", action="store_true", type=str)
+    parser.add_argument("-ver", "--version", action="store_true", type=str)
+    
+
+
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
+
+    elif args.vendor: vendor(args.vendor)
 
     args = parser.parse_args()
     ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)

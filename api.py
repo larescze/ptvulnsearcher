@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from os import abort
 from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_, and_
 from sqlalchemy.orm import declarative_base
