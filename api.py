@@ -89,35 +89,35 @@ def query_based_on_cve_id(cve_id):
 
 #Query based on vendor's name
 @app.route("/api/vendor/<string:vendor>")
-def query_by_vendors_name(vendor):
+def vendor(vendor):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor)
         return jsonify({'result': [result.serialized for result in statement]})
 
-#Quer based on vendor's name and product of that vendor
+#Query based on vendor's name and product of that vendor
 @app.route("/api/vendor/<string:vendor>/product/<string:product_name>")
-def query_by_vendors_name_productname(vendor, product_name):
+def vendor_productname(vendor, product_name):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor, Vendor.product_name == product_name)
         return jsonify({'result': [result.serialized for result in statement]})
 
 #Query based on vendor's name, product of that vendor and also version of that product
 @app.route("/api/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
-def query_by_vendors_name_productname_productversion(vendor, product_name, version):
+def vendor_productname_version(vendor, product_name, version):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor ==vendor, Vendor.product_name == product_name, Vendor.version == version)
         return jsonify({'result': [result.serialized for result in statement]})
 
 #Querz based on product's name
 @app.route("/api/product/<string:product_name>")
-def query_by_product_name(product_name):
+def product_name(product_name):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name)
         return jsonify({'result': [result.serialized for result in statement]})
 
 #Query based on product's name and version of that product
 @app.route("/api/product/<string:product_name>/version/<string:version>")
-def query_by_productname_version(product_name, version):
+def productname_version(product_name, version):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name, Vendor.version == version)
         return jsonify({'result': [result.serialized for result in statement]})
