@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from os import abort
 from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_, and_
@@ -79,15 +79,13 @@ class Vendor(Base):
             }
     
 @app.route("/api/cve/<string:cve_id>")
-def query_based_on_cve_id(cve_id):
+def cve(cve_id):
     with Session(engine) as session:
         result = []
         statement = session.query(Vendor).join(Cve.vendors).filter(Cve.cve_id == cve_id)
         return jsonify({
         'result': [result.serialized for result in statement]
     })
-
-
 
 #Query based on vendor's name
 @app.route("/api/vendor/<string:vendor>")
@@ -110,7 +108,7 @@ def vendor_productname_version(vendor, product_name, version):
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor ==vendor, Vendor.product_name == product_name, Vendor.version == version)
         return jsonify({'result': [result.serialized for result in statement]})
 
-#Querz based on product's name
+#Query based on product's name
 @app.route("/api/product/<string:product_name>")
 def product_name(product_name):
     with Session(engine) as session:
@@ -123,7 +121,7 @@ def productname_version(product_name, version):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name, Vendor.version == version)
         return jsonify({'result': [result.serialized for result in statement]})
-
+    
 
 
 if __name__ == "__main__":

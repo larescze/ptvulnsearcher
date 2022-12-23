@@ -8,7 +8,7 @@ import sys
 import requests
 import json
 import datacollector
-from api import vendor, vendor_productname, vendor_productname_version, product_name,productname_version
+from api import cve,vendor, vendor_productname, vendor_productname_version, product_name,productname_version
 
 
 class ptvulnsearcher:
@@ -57,14 +57,15 @@ def get_help():
         ]},
         {"options": [
             ["-s", "--search", "<search>", "Search keywords"],
-            ["-cve", "--cve", "<cve>", "Search specific CVE"],
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
-
+            ["-cve", "--cve", "<cve>", "Search specific CVE"],
             ["-v", "--vendor", "<vendor_name>", "Search CVE record based on vendor name"],
-            ["-p", "--product", "<product_name>", "Search CVE record based on product name"],
-            ["-ver", "--version", "<product_version>", "Search CVE record based on version"],
+            ["-vp", "--vendor & product", "<vendor_name> <product_name>", "Search CVE record based on vendor_name and product_name"],
+            ["-vpv", "--vendor & product & version", "<vendor_name> <product_name> <product_version>", "Search CVE record based on vendor_name, product_name and product_version"],
+            ["-p", "--product", "<product_name>", "Search CVE record based on product_name"],
+            ["-pv", "--product & version", "<product_name> <product_version>", "Search CVE record based on product_name and product_version"],
         ]
         }]
 
@@ -82,22 +83,34 @@ def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
     parser.add_argument("-s", "--search", type=str)
-    parser.add_argument("-cve", "--cve", type=str)
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)
-    parser.add_argument("-v", "--vendor", action="store_true", type=str)
-    parser.add_argument("-p", "--product", action="store_true", type=str)
-    parser.add_argument("-ver", "--version", action="store_true", type=str)
-    
+    parser.add_argument("-cve", "--cve", type=str, nargs=1)
+    parser.add_argument("-v", "--vendor", type=str, nargs=1)
+    parser.add_argument("-vp", "--vendor_product",type=str, nargs=2)
+    parser.add_argument("-vpv", "--vendor_product_version",type=str,nargs=3)
+    parser.add_argument("-p", "--product",type=str,nargs=1) 
+    parser.add_argument("-pv", "--product_version",type=str,nargs=2)   
 
 
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
+    elif "-cve":
+        cve(args.cve)
+    elif "-v":
+        vendor(args.vendor)
+    elif "-vp":
+        vendor_productname(args.vendor_product[0], args.vendor_product[1])
+    elif "-vpv":
+        vendor_productname_version(args.vendor_product_version[0],args.vendor_product_version[1],args.vendor_product_version[2])
+    elif "-p":
+        product_name(args.product)
+    elif "-pv":
+        productname_version(args.product_version[0],args.product_version[1])
 
-    elif args.vendor: vendor(args.vendor)
 
     args = parser.parse_args()
     ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
