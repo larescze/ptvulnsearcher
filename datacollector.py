@@ -2,6 +2,7 @@ import json
 import psycopg2
 import requests
 import csv
+from time import sleep
 
 class DataCollector:
 
@@ -124,81 +125,46 @@ class DataCollector:
         cve_table_reading.execute("SELECT cve_id FROM cve") 
 
         #To determine the record that is being updated
-        record_number = 1 
+        record_number = 1 #Used for determination of which line to UPDATE
+        request_counter = 1 #Used to control how many requests have been made already and set the limit when PAUSE should happen
 
         while(True):
             cve_id_record = [row for row in cve_table_reading.fetchone()]
-            if(cve_id_record[0][10]=="1" and cve_id_record[0][12]=="1"): #If you reach record 101 -> stop
-                break
+            record = cve_id_record[0]   # CVE-####-####
+            
+            #Making request
+            request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
+            print("Request on: %s" % record)
                 
-            else:
-                record = cve_id_record[0]   # CVE-####-####
+            #Getting response back in JSON format 
+            response = request.json()
+
+            #Picking data from JSON response
+            try:
+                cwe = response["cwe"]
+                cvss_v = response["cvss-vector"]
+                cvss_s = response["cvss"]
+                description = response["summary"]
+                product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
+                vendor = response["vulnerable_product"][-1].split(":")[3].title() #title() capitalize first letter of the record
+                product_n = response["vulnerable_product"][-1].split(":")[4]
+                product_v = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
+            except Exception:
+                None
+
+            #Trying UPDATEs
+            cve_table_update_query = """UPDATE cve SET cwe_id = %s, cvss_vector = %s, cvss_score = %s, description = %s WHERE id = %s"""
+            cve_table_update.execute(cve_table_update_query, (cwe,cvss_v,cvss_s,description, record_number))
                 
-                #Making request
-                request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
-                print("Request on: %s" % record)
-                
-                #Getting response back in JSON format 
-                response = request.json()
+            vendor_table_update_query = """UPDATE vendor SET vendor = %s, product_type = %s, product_name = %s, version = %s WHERE product_id = %s"""
+            vendor_table_update.execute(vendor_table_update_query, (vendor, product_t,product_n, product_v, record_number))
+            record_number=record_number+1 #Move to next line
+            request_counter=request_counter+1
+            
+            if request_counter == 181:
+                sleep(60)
+                request_counter = 1
 
-                #Picking data from JSON response
-                try:
-                    cwe = response["cwe"]
-                except KeyError:
-                    cwe = "None"
-
-                try:
-                    cvss_v = response["cvss-vector"]
-                except KeyError:
-                    cvss_v = "None"
-
-                try:
-                    cvss_s = response["cvss"]
-                except KeyError:
-                    cvss_s = "None"
-
-                try:
-                    description = response["summary"]
-                except KeyError:
-                    description = "None"
-
-                #Data for 'vendor' table
-                try:
-                    product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
-                except KeyError:
-                    product_t = "None"
-                except IndexError:
-                    product_t = "None"
-                
-                try:
-                    vendor = response["vulnerable_product"][-1].split(":")[3].title() #title() capitalize first letter of the record
-
-                except KeyError:
-                    vendor = "None"
-                except IndexError:
-                    product_t = "None"
-
-                try:
-                    product_n = response["vulnerable_product"][-1].split(":")[4]
-                except KeyError:
-                    product_n = "None"
-                except IndexError:
-                    product_t = "None"
-                
-                try:
-                    product_v = response["vulnerable_product"][-1].split(":")[5]
-                except KeyError:
-                    product_v = "None"
-                except IndexError:
-                    product_t = "None"
-        
-                #Trying UPDATEs
-                cve_table_update_query = """UPDATE cve SET cwe_id = %s, cvss_vector = %s, cvss_score = %s, description = %s WHERE id = %s"""
-                cve_table_update.execute(cve_table_update_query, (cwe,cvss_v,cvss_s,description, record_number))
-                
-                vendor_table_update_query = """UPDATE vendor SET vendor = %s, product_type = %s, product_name = %s, version = %s WHERE product_id = %s"""
-                vendor_table_update.execute(vendor_table_update_query, (vendor, product_t,product_n, product_v, record_number))
-                record_number=record_number+1 #Move to next line
 
         request.close() #Close session with the server
         cve_table_reading.close()
