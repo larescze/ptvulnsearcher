@@ -77,7 +77,10 @@ class Vendor(Base):
                 "product_name":self.product_name, 
                 "version":self.version,
             }
-    
+
+def input_sanitization():
+    pass
+   
 @app.route("/api/cve/<string:cve_id>")
 def cve(cve_id):
     with Session(engine) as session:

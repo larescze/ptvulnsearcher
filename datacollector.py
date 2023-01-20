@@ -126,11 +126,11 @@ class DataCollector:
 
         #To determine the record that is being updated
         record_number = 1 #Used for determination of which line to UPDATE
-        request_counter = 1 #Used to control how many requests have been made already and set the limit when PAUSE should happen
+        request_counter = 1 #Used to control how many requests have been made already and set the limit for the POUSE to happens
 
         while(True):
             cve_id_record = [row for row in cve_table_reading.fetchone()]
-            record = cve_id_record[0]   # CVE-####-####
+            record = cve_id_record[0]   # = CVE-####-####
             
             #Making request
             request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
@@ -146,7 +146,7 @@ class DataCollector:
                 cvss_s = response["cvss"]
                 description = response["summary"]
                 product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
-                vendor = response["vulnerable_product"][-1].split(":")[3].title() #title() capitalize first letter of the record
+                vendor = response["vulnerable_product"][-1].split(":")[3].title()    #title() capitalize first letter of the record
                 product_n = response["vulnerable_product"][-1].split(":")[4]
                 product_v = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
             except Exception:
@@ -166,6 +166,7 @@ class DataCollector:
                 request_counter = 1
 
 
+        """Need this to be figured out"""
         request.close() #Close session with the server
         cve_table_reading.close()
         cve_table_update.close()
