@@ -10,6 +10,7 @@ from sqlalchemy import select
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, fields, marshal_with
 import json
+import os
 
 
 #PostgreSQL connection
@@ -78,13 +79,25 @@ class Vendor(Base):
                 "version":self.version,
             }
 
-def input_sanitization():
-    pass
+
+"""#Input sanitization
+def input_sanitization(input):
+    sanitized_input= ""
+    potentially_dangerous = ['<','>','\'','\"',"AND","OR","SELECT","UNION","DROP","ALTER","FROM"]
+    for content1 in input.split(' '):
+        for content2 in potentially_dangerous:
+            if (content1 == content2):
+                sanitized_input = sanitized_input +"&t"
+            else:
+                sanitized_input = sanitized_input + content1
+    return sanitized_input"""
+
    
 @app.route("/api/cve/<string:cve_id>")
 def cve(cve_id):
     with Session(engine) as session:
         result = []
+        #cve_id = input_sanitization(cve_id)
         statement = session.query(Vendor).join(Cve.vendors).filter(Cve.cve_id == cve_id)
         return jsonify({
         'result': [result.serialized for result in statement]
