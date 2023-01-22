@@ -70,7 +70,7 @@ class DataCollector:
         """Function reads CVE records (CVE-####-####,) from CSV file and puts it into database column 'cve_id' """
 
         #Database connection
-        db_connection = self.connection() #'self' substitute the object instance itself
+        db_connection = self.connection() #'self' substitutes an object instance itself
 
         #Open file and 'cve-id' data into db
         with open('allitems.csv', mode='r', encoding='cp437') as csv_file:  # Download from https://www.cve.org/Downloads
@@ -88,7 +88,7 @@ class DataCollector:
             next(reader, None)
             next(reader, None)
 
-            #'cursor' allows Python code to execute PostgreSQL commands in a database session.
+            #'cursor' allows Python code to execute SQL queries in a database session.
             cve_table_cursor = db_connection.cursor() # Cursor for 'cve' table
             vendor_table_cursor = db_connection.cursor() # Cursor for 'vendor' table
 
@@ -108,15 +108,14 @@ class DataCollector:
 
 
     def cve_api_requests(self):
-        """Function reads records from 'cve_id'column of 'cve' table and makes a request based on the values.
-        Then, cve_id, cvss_vectro, cvss_score and description data are taken from the response and inserted into tables within the database."""
+        """Function reads records from 'cve_id'column of 'cve' table and makes a request based on that value.
+        Then, cve_id, cvss_vector, cvss_score and description data are taken from the response and inserted into tables within the database."""
 
         #Database connection
         db_connection = self.connection()
 
         
         #Cursors need to be defined out of if/else statement otherwise 'UnboundLocalError: local variable 'cursor' referenced before assignment' is raised
-
         cve_table_reading = db_connection.cursor() #'cve_table_reading' cursor for reading 'cve_id' column from DB
         cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
         vendor_table_update = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
@@ -158,16 +157,20 @@ class DataCollector:
                 
             vendor_table_update_query = """UPDATE vendor SET vendor = %s, product_type = %s, product_name = %s, version = %s WHERE product_id = %s"""
             vendor_table_update.execute(vendor_table_update_query, (vendor, product_t,product_n, product_v, record_number))
+            request.close() #Close session with the server
+            
             record_number=record_number+1 #Move to next line
             request_counter=request_counter+1
             
             if request_counter == 181:
                 sleep(60)
                 request_counter = 1
+            else:
+                pass
 
-
-        """Need this to be figured out"""
-        request.close() #Close session with the server
+        
+        
+        """Need figure this out"""
         cve_table_reading.close()
         cve_table_update.close()
         vendor_table_update.close()
