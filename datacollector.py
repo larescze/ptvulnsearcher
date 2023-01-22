@@ -67,10 +67,10 @@ class DataCollector:
 
 
     def csv_file_reader(self):
-        """Function reads CVE records (CVE-####-####,) from CSV file and puts it into database column 'cve_id' """
+        """Function reads CVE values (CVE-####-####,) from CSV file and populates 'cve_id' column with them"""
 
         #Database connection
-        db_connection = self.connection() #'self' substitutes an object instance itself
+        db_connection = self.connection()
 
         #Open file and 'cve-id' data into db
         with open('allitems.csv', mode='r', encoding='cp437') as csv_file:  # Download from https://www.cve.org/Downloads
@@ -108,8 +108,8 @@ class DataCollector:
 
 
     def cve_api_requests(self):
-        """Function reads records from 'cve_id'column of 'cve' table and makes a request based on that value.
-        Then, cve_id, cvss_vector, cvss_score and description data are taken from the response and inserted into tables within the database."""
+        """Function reads values of'cve_id'column of 'cve' table and makes a request based on them.
+           Then, cve_id, cvss_vector, cvss_score and description data are taken from the response and are inserted into database."""
 
         #Database connection
         db_connection = self.connection()
@@ -120,12 +120,12 @@ class DataCollector:
         cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
         vendor_table_update = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
 
-        #Reading 'cve_id' column's records on which the requests are based
+        #Reading 'cve_id' column values on which the requests are based
         cve_table_reading.execute("SELECT cve_id FROM cve") 
 
-        #To determine the record that is being updated
-        record_number = 1 #Used for determination of which line to UPDATE
-        request_counter = 1 #Used to control how many requests have been made already and set the limit for the POUSE to happens
+
+        record_number = 1 #Used for determination of which line is being UPDATEd
+        request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
 
         while(True):
             cve_id_record = [row for row in cve_table_reading.fetchone()]

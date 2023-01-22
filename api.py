@@ -14,19 +14,16 @@ import os
 
 
 #PostgreSQL connection
-
-#Isolation level = the ability of a database to allow a transaction to execute as if there are no other concurently running transactions. The goal is to prevent reads and writes of temporary/aborted or othewise incorrected data written by concurrent transaction
-#Create an engine = creates new database connection
 app = Flask(__name__)
 engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgres", isolation_level = "AUTOCOMMIT", echo = True)
 
 
 
-#Declaring declarative base class
+#Declaration of declarative base class
 Base = declarative_base()
 
 
-#Class "Cve" refering to "cve" table in the database
+#Class "Cve" refers to "cve" table in the database
 class Cve(Base):
     __tablename__ = "cve" #The reference mentioned above is made based on value of "__tablename__"
 
@@ -37,12 +34,12 @@ class Cve(Base):
     cvss_score = Column(Float)
     description = Column(Text)
     
-     #Declaring relationship
+    #Relationship declaration
     vendors = relationship("Vendor", back_populates = "cve_")
 
     #Serilization into JSON
     @property
-    def serialized(self): # "-> str" means that function returns a String type
+    def serialized(self):
         return {"cve_id": self.cve_id, 
                 "cwe_id":self.cwe_id, 
                 "cvss_vector":self.cvss_vector, 
@@ -51,11 +48,10 @@ class Cve(Base):
         }
     
 
-#Class "Vendor" refering to "vendor" table in the database
+#Class "Vendor" refers to "vendor" table in the database
 class Vendor(Base):
     __tablename__ = "vendor" #The reference mentioned above is made based on value of "__tablename__"
 
-    #Nullability is done by using 'Optional[]'
     product_id = Column(primary_key = True)
     cveid = Column(ForeignKey("cve.id"))
     cve_id = Column(String(17))
@@ -64,7 +60,7 @@ class Vendor(Base):
     product_name = Column(Text)
     version = Column(String(8))
 
-    #Declaring relationship
+    #Relationship declaration
     cve_ = relationship("Cve" , back_populates="vendors")
 
     #Serilization into JSON
@@ -80,8 +76,8 @@ class Vendor(Base):
             }
 
 
-"""#Input sanitization
-def input_sanitization(input):
+#Input sanitization
+"""def input_sanitization(input):
     sanitized_input= ""
     potentially_dangerous = ['<','>','\'','\"',"AND","OR","SELECT","UNION","DROP","ALTER","FROM"]
     for content1 in input.split(' '):
@@ -110,14 +106,14 @@ def vendor(vendor):
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor)
         return jsonify({'result': [result.serialized for result in statement]})
 
-#Query based on vendor's name and product of that vendor
+#Query based on vendor's name and product' name of a vendor
 @app.route("/api/vendor/<string:vendor>/product/<string:product_name>")
 def vendor_productname(vendor, product_name):
     with Session(engine) as session:
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor, Vendor.product_name == product_name)
         return jsonify({'result': [result.serialized for result in statement]})
 
-#Query based on vendor's name, product of that vendor and also version of that product
+#Query based on vendor's name, product's name and version of the product of a vendor
 @app.route("/api/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
 def vendor_productname_version(vendor, product_name, version):
     with Session(engine) as session:
@@ -131,7 +127,7 @@ def product_name(product_name):
         statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name)
         return jsonify({'result': [result.serialized for result in statement]})
 
-#Query based on product's name and version of that product
+#Query based on product's name and version of the product
 @app.route("/api/product/<string:product_name>/version/<string:version>")
 def productname_version(product_name, version):
     with Session(engine) as session:
