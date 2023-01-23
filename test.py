@@ -8,7 +8,7 @@ print(product_v)"""
 
 
 #-----------------------------------------------------------------------------------------------------
-import os
+"""import os
 
 
 
@@ -23,9 +23,18 @@ def input_sanitization(input):
                 sanitized_input = sanitized_input + content1
     return sanitized_input
 
-               
-
 inp = input_sanitization("AND")
 print(inp)
-#Alter this into a function and implement it into to a main code 'api.py'
+#Alter this into a function and implement it into to a main code 'api.py'"""
+#-----------------------------------------------------------------------------------------------------
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("echo", help="enter whatever you want")
+args = parser.parse_args()
+print(args.echo)
+
+
+               
+
+
 

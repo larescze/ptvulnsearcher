@@ -60,12 +60,6 @@ def get_help():
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
-            ["-cve", "--cve", "<cve>", "Search specific CVE"],
-            ["-v", "--vendor", "<vendor_name>", "Search CVE record based on vendor name"],
-            ["-vp", "--vendor & product", "<vendor_name> <product_name>", "Search CVE record based on vendor_name and product_name"],
-            ["-vpv", "--vendor & product & version", "<vendor_name> <product_name> <product_version>", "Search CVE record based on vendor_name, product_name and product_version"],
-            ["-p", "--product", "<product_name>", "Search CVE record based on product_name"],
-            ["-pv", "--product & version", "<product_name> <product_version>", "Search CVE record based on product_name and product_version"],
         ]
         }]
 
@@ -82,34 +76,39 @@ def search_cve(search_string, search_cve):
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
-    parser.add_argument("-s", "--search", type=str)
+    parser.add_argument("-s", "--search", dest="search", choices=['cve','v', 'vp','vpv','p','pv'], 
+                        help="Search can be based on: \n-cve -> CVE ID\n-v -> vendor's name\n-vp -> vendor's and product's name\n-vpv -> vendor's and product's name and product's version\n-p -> product's name\n-pv -> product's name and version")
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)
-    parser.add_argument("-cve", "--cve", type=str, nargs=1)
-    parser.add_argument("-v", "--vendor", type=str, nargs=1)
-    parser.add_argument("-vp", "--vendor_product",type=str, nargs=2)
-    parser.add_argument("-vpv", "--vendor_product_version",type=str,nargs=3)
-    parser.add_argument("-p", "--product",type=str,nargs=1) 
-    parser.add_argument("-pv", "--product_version",type=str,nargs=2)   
-
-
+    
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
-    elif "-cve":
-        cve(args.cve)
-    elif "-v":
-        vendor(args.vendor)
-    elif "-vp":
-        vendor_productname(args.vendor_product[0], args.vendor_product[1])
-    elif "-vpv":
-        vendor_productname_version(args.vendor_product_version[0],args.vendor_product_version[1],args.vendor_product_version[2])
-    elif "-p":
-        product_name(args.product)
-    elif "-pv":
-        productname_version(args.product_version[0],args.product_version[1])
+
+    elif 'cve':
+        cve_id = input("Enter CVE ID: ")
+        cve(cve_id) #Function call
+    elif 'v':
+        vendors_name = input("Enter vendor's name: ")
+        vendor(vendors_name)#Function call
+    elif '-vp':
+        vendors_name = input("Enter vendor's name: ")
+        products_name = input("Enter product's name: ")
+        vendor_productname(vendors_name,products_name)#Function call
+    elif '-vpv':
+        vendors_name = input("Enter vendor's name: ")
+        products_name = input("Enter product's name: ")
+        version = input("Enter product's version: ")
+        vendor_productname_version(vendors_name,products_name,version)#Function call
+    elif '-p':
+        products_name = input("Enter product's name: ")
+        product_name(products_name)#Function call
+    elif '-pv':
+        products_name = input("Enter product's name: ")
+        version = input("Enter product's version: ")
+        productname_version(products_name,version)#Function call
 
 
     args = parser.parse_args()
