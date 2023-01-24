@@ -87,33 +87,37 @@ def parse_args():
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
 
-    elif 'cve':
+    args = parser.parse_args()
+    ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
+    #return args
+
+    srch = args.search
+
+    if srch == 'cve':
         cve_id = input("Enter CVE ID: ")
         cve(cve_id) #Function call
-    elif 'v':
+    elif srch == 'v':
         vendors_name = input("Enter vendor's name: ")
         vendor(vendors_name)#Function call
-    elif '-vp':
+    elif srch == '-vp':
         vendors_name = input("Enter vendor's name: ")
         products_name = input("Enter product's name: ")
         vendor_productname(vendors_name,products_name)#Function call
-    elif '-vpv':
+    elif srch == '-vpv':
         vendors_name = input("Enter vendor's name: ")
         products_name = input("Enter product's name: ")
         version = input("Enter product's version: ")
         vendor_productname_version(vendors_name,products_name,version)#Function call
-    elif '-p':
+    elif srch == '-p':
         products_name = input("Enter product's name: ")
         product_name(products_name)#Function call
-    elif '-pv':
+    elif srch == '-pv':
         products_name = input("Enter product's name: ")
         version = input("Enter product's version: ")
         productname_version(products_name,version)#Function call
 
 
-    args = parser.parse_args()
-    ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
-    return args
+    
 
 
 def main():
