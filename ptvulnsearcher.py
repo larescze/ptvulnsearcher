@@ -76,8 +76,15 @@ def search_cve(search_string, search_cve):
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
-    parser.add_argument("-s", "--search", dest="search", choices=['cve','v', 'vp','vpv','p','pv'], 
-                        help="Search can be based on: \n-cve -> CVE ID\n-v -> vendor's name\n-vp -> vendor's and product's name\n-vpv -> vendor's and product's name and product's version\n-p -> product's name\n-pv -> product's name and version")
+    subparser = parser.add_subparsers()
+    search = subparser.add_argument("-s", "--search", dest="search", help="Search can be based on: \n-cve -> CVE ID\n-v -> vendor's name\n-vp -> vendor's and product's name\n-vpv -> vendor's and product's name and product's version\n-p -> product's name\n-pv -> product's name and version")
+
+    search.add_argument('--cve', action="store_true")
+    search.add_argument('--vendor', action="store_true")
+    search.add_argument('--product', action="store_true")
+    search.add_argument('--version', action="store_true")
+    
+
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)
@@ -88,33 +95,25 @@ def parse_args():
         sys.exit(0)
 
     args = parser.parse_args()
+
+    if args.cve:
+        cve(args.cve)
+    elif args.vendor:
+        vendor(args.vendor)
+    elif args.vendor and args.product:
+        vendor_productname(args.vendor, args.product)
+    elif args.vendor and args.product and args.version:
+        vendor_productname_version(args.vendor,args.product,args.version)
+    elif args.product:
+        product_name(args.product)
+    elif args.product and args.version:
+        productname_version(args.product,args.version)
+
+
     ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
-    #return args
+    return args
 
-    srch = args.search
 
-    if srch == 'cve':
-        cve_id = input("Enter CVE ID: ")
-        cve(cve_id) #Function call
-    elif srch == 'v':
-        vendors_name = input("Enter vendor's name: ")
-        vendor(vendors_name)#Function call
-    elif srch == '-vp':
-        vendors_name = input("Enter vendor's name: ")
-        products_name = input("Enter product's name: ")
-        vendor_productname(vendors_name,products_name)#Function call
-    elif srch == '-vpv':
-        vendors_name = input("Enter vendor's name: ")
-        products_name = input("Enter product's name: ")
-        version = input("Enter product's version: ")
-        vendor_productname_version(vendors_name,products_name,version)#Function call
-    elif srch == '-p':
-        products_name = input("Enter product's name: ")
-        product_name(products_name)#Function call
-    elif srch == '-pv':
-        products_name = input("Enter product's name: ")
-        version = input("Enter product's version: ")
-        productname_version(products_name,version)#Function call
 
 
     

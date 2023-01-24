@@ -170,7 +170,7 @@ class DataCollector:
 
         
         
-        """Need figure this out"""
+        """Need to figure this out"""
         cve_table_reading.close()
         cve_table_update.close()
         vendor_table_update.close()
