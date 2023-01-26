@@ -102,66 +102,64 @@ class DataCollector:
     def cve_api_requests(self):
         """Function reads values of'cve_id'column of 'cve' table and makes a request based on them.
            Then, cve_id, cvss_vector, cvss_score and description data are taken from the response and are inserted into database."""
+        try:
+            #Database connection
+            db_connection = self.connection()
+    
+            #Cursors need to be defined out of if/else statement otherwise 'UnboundLocalError: local variable 'cursor' referenced before assignment' is raised
+            cve_table_reading = db_connection.cursor() #'cve_table_reading' cursor for reading 'cve_id' column from DB
+            cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
+            vendor_table_insert = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
 
-        #Database connection
-        db_connection = self.connection()
- 
-        #Cursors need to be defined out of if/else statement otherwise 'UnboundLocalError: local variable 'cursor' referenced before assignment' is raised
-        cve_table_reading = db_connection.cursor() #'cve_table_reading' cursor for reading 'cve_id' column from DB
-        cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
-        vendor_table_insert = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
+            #Reading 'cve_id' column values on which the requests are based
+            cve_table_reading.execute("SELECT cve_id FROM cve") 
 
-        #Reading 'cve_id' column values on which the requests are based
-        cve_table_reading.execute("SELECT cve_id FROM cve") 
+            record_number = 1 #Used for determination of which line is being UPDATEd
+            request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
 
-        record_number = 1 #Used for determination of which line is being UPDATEd
-        request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
-
-        while(True):
-            cve_id_record = [row for row in cve_table_reading.fetchone()]
-            record = cve_id_record[0]   # = CVE-####-####
-            
-            #Making request
-            request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
-            print("Request on: %s" % record)
+            while(True):
+                cve_id_record = [row for row in cve_table_reading.fetchone()]
+                record = cve_id_record[0]   # = CVE-####-####
                 
-            #Getting response back in JSON format 
-            response = request.json()
+                #Making request
+                request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
+                print("Request on: %s" % record)
+                    
+                #Getting response back in JSON format 
+                response = request.json()
 
-            #Picking data from JSON response
-            try:
-                cwe = response["cwe"]
-                cvss_v = response["cvss-vector"]
-                cvss_s = response["cvss"]
-                description = response["summary"]
-                product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
-                vendor = response["vulnerable_product"][-1].split(":")[3].title()    #title() capitalize first letter of the record
-                product_n = response["vulnerable_product"][-1].split(":")[4]
-                product_v = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
-            except Exception:
-                None
+                #Picking data from JSON response
+                try:
+                    cwe = response["cwe"]
+                    cvss_v = response["cvss-vector"]
+                    cvss_s = response["cvss"]
+                    description = response["summary"]
+                    product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
+                    vendor = response["vulnerable_product"][-1].split(":")[3].title()    #title() capitalize first letter of the record
+                    product_n = response["vulnerable_product"][-1].split(":")[4]
+                    product_v = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
+                except Exception:
+                    None
 
-            #Trying UPDATEs
-            cve_table_update_query = """UPDATE cve SET cwe_id = %s, cvss_vector = %s, cvss_score = %s, description = %s WHERE id = %s"""
-            cve_table_update.execute(cve_table_update_query, (cwe,cvss_v,cvss_s,description, record_number))
+                cve_table_update.execute("UPDATE cve SET cwe_id=%s, cvss_vector=%s, cvss_score=%s, description=%s WHERE id=%s", (cwe, cvss_v, cvss_s, description, record_number, ))
+                vendor_table_insert.execute("INSERT INTO vendor (vendor, product_type, product_name, version) VALUES (%s, %s, %s, %s)", (vendor, product_t,product_n, product_v,))
                 
-            vendor_table_insert.execute("INSERT INTO vendor (vendor, product_type, product_name, version) VALUES (%s, %s, %s, %s)", (vendor, product_t,product_n, product_v,))
-            request.close() #Close session with the server
-            
-            record_number=record_number+1 #Move to next line
-            request_counter=request_counter+1
-            
-            if request_counter == 181:
-                sleep(60)
-                request_counter = 1
-            else:
-                pass
+                request.close()
+                record_number=record_number+1 #Move to next line
+                request_counter=request_counter+1
 
-
-        cve_table_reading.close()
-        cve_table_update.close()
-        vendor_table_insert.close()
-        db_connection.close()
+                #This line is used to handle situation when one or more keys of response ('cwe',cvss_v . . . ) aren't present in a response. Because i do not handle the Exception that is risen then, data from request before are left and not overridden by the new one, because it's not there -> that's why i'am setting the values initially and letting them be overridden so if no values is present in response the initial 'None' or 0.0 remains.
+                (cwe,cvss_v,cvss_s,description,product_t,vendor,product_n,product_v) = ("None","None",0.0,"None","None","None","None",0.0)
+                
+                if request_counter == 181:
+                    sleep(60)
+                    request_counter = 1
+                
+        finally:
+            cve_table_reading.close()
+            cve_table_update.close()
+            vendor_table_insert.close()
+            db_connection.close()
         
 
 
