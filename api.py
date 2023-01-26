@@ -37,6 +37,9 @@ class Cve(Base):
     #Relationship declaration
     vendors = relationship("Vendor", back_populates = "cve_")
 
+    """def __repr__(self) -> str: # "-> str" means that function returns a String type
+        return f"Cve(cve_id = {self.cve_id}, cwe_id = {self.cwe_id}, cvss_vector={self.cvss_vector}, cvss_score={self.cvss_score}, description={self.description})"
+
     #Serilization into JSON
     @property
     def serialized(self):
@@ -44,8 +47,7 @@ class Cve(Base):
                 "cwe_id":self.cwe_id, 
                 "cvss_vector":self.cvss_vector, 
                 "cvss_score":self.cvss_score, 
-                "description":self.description,
-        }
+                "description":self.description,}"""
     
 
 #Class "Vendor" refers to "vendor" table in the database
@@ -54,7 +56,6 @@ class Vendor(Base):
 
     product_id = Column(primary_key = True)
     cveid = Column(ForeignKey("cve.id"))
-    cve_id = Column(String(17))
     vendor = Column(Text)
     product_type = Column(String(11))
     product_name = Column(Text)
@@ -63,17 +64,18 @@ class Vendor(Base):
     #Relationship declaration
     cve_ = relationship("Cve" , back_populates="vendors")
 
+    """def __repr__(self) -> str: # "-> str" means that function returns a String type
+        return f"Vendor(product_id = {self.product_id}, cveid = {self.cveid}, vendor={self.vendor},product_type={self.product_type}, product_name = {self.product_name}, version = {self.version})"
+
     #Serilization into JSON
     @property
     def serialized(self):
         return{"product_id":self.product_id, 
                 "cveid":self.cveid, 
-                "cvce_id":self.cve_id, 
                 "vendor":self.vendor,
                 "product_type":self.product_type, 
                 "product_name":self.product_name, 
-                "version":self.version,
-            }
+                "version":self.version,}"""
 
 
 #Input sanitization
@@ -89,52 +91,64 @@ class Vendor(Base):
     return sanitized_input"""
 
    
-@app.route("/api/cve/<string:cve_id>")
+@app.route("/api/v1/cve/<string:cve_id>")
 def cve(cve_id):
     with Session(engine) as session:
         result = []
-        #cve_id = input_sanitization(cve_id)
-        statement = session.query(Vendor).join(Cve.vendors).filter(Cve.cve_id == cve_id)
-        return jsonify({
-        'result': [result.serialized for result in statement]
-    })
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Cve.cve_id == cve_id)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
 
 #Query based on vendor's name
-@app.route("/api/vendor/<string:vendor>")
+@app.route("/api/v1/vendor/<string:vendor>")
 def vendor(vendor):
     with Session(engine) as session:
-        statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor)
-        return jsonify({'result': [result.serialized for result in statement]})
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
 
 #Query based on vendor's name and product' name of a vendor
-@app.route("/api/vendor/<string:vendor>/product/<string:product_name>")
+@app.route("/api/v1/vendor/<string:vendor>/product/<string:product_name>")
 def vendor_productname(vendor, product_name):
     with Session(engine) as session:
-        statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor == vendor, Vendor.product_name == product_name)
-        return jsonify({'result': [result.serialized for result in statement]})
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
 
 #Query based on vendor's name, product's name and version of the product of a vendor
-@app.route("/api/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
+@app.route("/api/v1/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
 def vendor_productname_version(vendor, product_name, version):
     with Session(engine) as session:
-        statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.vendor ==vendor, Vendor.product_name == product_name, Vendor.version == version)
-        return jsonify({'result': [result.serialized for result in statement]})
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name).where(Vendor.version==version)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
 
 #Query based on product's name
-@app.route("/api/product/<string:product_name>")
+@app.route("/api/v1/product/<string:product_name>")
 def product_name(product_name):
     with Session(engine) as session:
-        statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name)
-        return jsonify({'result': [result.serialized for result in statement]})
-
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)
+        
 #Query based on product's name and version of the product
-@app.route("/api/product/<string:product_name>/version/<string:version>")
+@app.route("/api/v1/product/<string:product_name>/version/<string:version>")
 def productname_version(product_name, version):
     with Session(engine) as session:
-        statement = session.query(Vendor).join(Cve.vendors).filter(Vendor.product_name == product_name, Vendor.version == version)
-        return jsonify({'result': [result.serialized for result in statement]})
-    
-
+        result = []
+        statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name).where(Vendor.version==version)
+        for row in session.execute(statement):
+            result.append(dict(row))
+        return jsonify(result)    
 
 if __name__ == "__main__":
     app.run(debug=True)

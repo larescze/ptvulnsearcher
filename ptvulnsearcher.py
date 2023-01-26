@@ -63,32 +63,25 @@ def get_help():
         ]
         }]
 
-
 def search_cve(search_string, search_cve):
     api_url = "https://as.penterep.com:8443/api/v1/cve/search"
     parameters = {"search": search_string, "cve": search_cve}
     response = requests.get(api_url, params=parameters)
     response_json = response.json()
-
     return json.dumps(response_json['data'], indent=2)
-
 
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
     subparser = parser.add_subparsers()
     search = subparser.add_argument("-s", "--search", dest="search", help="Search can be based on: \n-cve -> CVE ID\n-v -> vendor's name\n-vp -> vendor's and product's name\n-vpv -> vendor's and product's name and product's version\n-p -> product's name\n-pv -> product's name and version")
-
     search.add_argument('--cve', action="store_true")
     search.add_argument('--vendor', action="store_true")
     search.add_argument('--product', action="store_true")
     search.add_argument('--version', action="store_true")
-    
-
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)
-    
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
@@ -108,15 +101,11 @@ def parse_args():
         product_name(args.product)
     elif args.product and args.version:
         productname_version(args.product,args.version)
-
+    else:
+        sys.exit("Invalid input")
 
     ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
     return args
-
-
-
-
-    
 
 
 def main():
@@ -125,9 +114,6 @@ def main():
     args = parse_args()
     script = ptvulnsearcher(args)
     script.run()
-
-
-
 
 
 if __name__ == "__main__":

@@ -49,7 +49,6 @@ class DataCollector:
                 (
                     product_id SERIAL PRIMARY KEY,
                     cveid BIGSERIAL,
-                    cve_id VARCHAR(17),
                     vendor TEXT,                    
                     product_type VARCHAR(11),              
                     product_name TEXT,           
@@ -94,18 +93,11 @@ class DataCollector:
 
             for lines in reader:
                 cve_table_cursor.execute("INSERT INTO cve (cve_id) VALUES (%s)", (lines[0],))
-                vendor_table_cursor.execute("INSERT INTO vendor (cve_id) VALUES (%s)", (lines[0],))
-
-                
-                
 
             print("Data have been successfully inserted ")
             cve_table_cursor.close()
             vendor_table_cursor.close()
             db_connection.close()
-
-
-
 
     def cve_api_requests(self):
         """Function reads values of'cve_id'column of 'cve' table and makes a request based on them.
@@ -113,16 +105,14 @@ class DataCollector:
 
         #Database connection
         db_connection = self.connection()
-
-        
+ 
         #Cursors need to be defined out of if/else statement otherwise 'UnboundLocalError: local variable 'cursor' referenced before assignment' is raised
         cve_table_reading = db_connection.cursor() #'cve_table_reading' cursor for reading 'cve_id' column from DB
         cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
-        vendor_table_update = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
+        vendor_table_insert = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
 
         #Reading 'cve_id' column values on which the requests are based
         cve_table_reading.execute("SELECT cve_id FROM cve") 
-
 
         record_number = 1 #Used for determination of which line is being UPDATEd
         request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
@@ -155,8 +145,7 @@ class DataCollector:
             cve_table_update_query = """UPDATE cve SET cwe_id = %s, cvss_vector = %s, cvss_score = %s, description = %s WHERE id = %s"""
             cve_table_update.execute(cve_table_update_query, (cwe,cvss_v,cvss_s,description, record_number))
                 
-            vendor_table_update_query = """UPDATE vendor SET vendor = %s, product_type = %s, product_name = %s, version = %s WHERE product_id = %s"""
-            vendor_table_update.execute(vendor_table_update_query, (vendor, product_t,product_n, product_v, record_number))
+            vendor_table_insert.execute("INSERT INTO vendor (vendor, product_type, product_name, version) VALUES (%s, %s, %s, %s)", (vendor, product_t,product_n, product_v,))
             request.close() #Close session with the server
             
             record_number=record_number+1 #Move to next line
@@ -168,19 +157,17 @@ class DataCollector:
             else:
                 pass
 
-        
-        
-        """Need to figure this out"""
+
         cve_table_reading.close()
         cve_table_update.close()
-        vendor_table_update.close()
+        vendor_table_insert.close()
         db_connection.close()
+        
 
 
 
 #An instance of 'DataCollector' class
 instance = DataCollector()
-
 #Calling class methods
 instance.create_tables()
 instance.csv_file_reader()
