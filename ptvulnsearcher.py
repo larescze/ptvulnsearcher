@@ -55,7 +55,11 @@ def get_help():
             "ptvulnsearcher -s Apache v2.2",
         ]},
         {"options": [
-            ["-s", "--search", "<search>", "Search keywords"],
+            ["search", "<search>", "Search keywords"],
+            ["--cve", "<cve id>", "Search by cve id"],
+            ["--vendor", "<vendor>", "Search by vendor's name"],
+            ["--product", "<product>", "Search by product's name"],
+            ["--version", "<version>", "Search by version"],
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
