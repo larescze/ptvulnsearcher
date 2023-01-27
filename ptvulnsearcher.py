@@ -7,7 +7,6 @@ import argparse
 import sys
 import requests
 import json
-import datacollector
 from api import cve,vendor, vendor_productname, vendor_productname_version, product_name,productname_version
 
 
@@ -73,12 +72,12 @@ def search_cve(search_string, search_cve):
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
-    subparser = parser.add_subparsers()
-    search = subparser.add_argument("-s", "--search", dest="search", help="Search can be based on: \n-cve -> CVE ID\n-v -> vendor's name\n-vp -> vendor's and product's name\n-vpv -> vendor's and product's name and product's version\n-p -> product's name\n-pv -> product's name and version")
-    search.add_argument('--cve', action="store_true")
-    search.add_argument('--vendor', action="store_true")
-    search.add_argument('--product', action="store_true")
-    search.add_argument('--version', action="store_true")
+    subparsers = parser.add_subparsers()
+    search = subparsers.add_parser('search')
+    search.add_argument('--cve')
+    search.add_argument('--vendor')
+    search.add_argument('--product')
+    search.add_argument('--version')
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-h","--help", action="get_help", type=get_help)

@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 from os import abort
 from sqlalchemy import String, Integer, Float, Text, Column, ForeignKey, or_, and_
 from sqlalchemy.orm import declarative_base
@@ -17,11 +16,8 @@ import os
 app = Flask(__name__)
 engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgres", isolation_level = "AUTOCOMMIT", echo = True)
 
-
-
 #Declaration of declarative base class
 Base = declarative_base()
-
 
 #Class "Cve" refers to "cve" table in the database
 class Cve(Base):
@@ -49,7 +45,6 @@ class Cve(Base):
                 "cvss_score":self.cvss_score, 
                 "description":self.description,}"""
     
-
 #Class "Vendor" refers to "vendor" table in the database
 class Vendor(Base):
     __tablename__ = "vendor" #The reference mentioned above is made based on value of "__tablename__"

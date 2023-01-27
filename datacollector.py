@@ -148,7 +148,7 @@ class DataCollector:
                 record_number=record_number+1 #Move to next line
                 request_counter=request_counter+1
 
-                #This line is used to handle situation when one or more keys of response ('cwe',cvss_v . . . ) aren't present in a response. Because i do not handle the Exception that is risen then, data from request before are left and not overridden by the new one, because it's not there -> that's why i'am setting the values initially and letting them be overridden so if no values is present in response the initial 'None' or 0.0 remains.
+                #This line is used to handle situation when one or more keys of response ('cwe',cvss_v . . . ) aren't present in a response. Because i do not handle the Exception that is risen then, data, from request before are left and not overridden by the new one, because it's not there -> that's why i'am setting the values initially and letting them be overridden, so if no values is present in response the initial 'None' or 0.0 remains.
                 (cwe,cvss_v,cvss_s,description,product_t,vendor,product_n,product_v) = ("None","None",0.0,"None","None","None","None",0.0)
                 
                 if request_counter == 181:

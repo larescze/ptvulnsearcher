@@ -27,11 +27,26 @@ inp = input_sanitization("AND")
 print(inp)
 #Alter this into a function and implement it into to a main code 'api.py'"""
 #-----------------------------------------------------------------------------------------------------
-import argparse
+"""import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("echo", help="enter whatever you want")
 args = parser.parse_args()
-print(args.echo)
+print(args.echo)"""
+#-----------------------------------------------------------------------------------------------------
+import argparse
+
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers()
+search = subparsers.add_parser('search')
+search.add_argument('--cve')
+search.add_argument('--vendor')
+args = parser.parse_args()
+
+if args.cve and args.vendor:
+    print(args.cve,args.vendor)
+else:
+    print("/")
+
 
 
                
