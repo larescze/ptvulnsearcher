@@ -59,7 +59,7 @@ def get_help():
             ["--cve", "<cve id>", "Search by cve id"],
             ["--vendor", "<vendor>", "Search by vendor's name"],
             ["--product", "<product>", "Search by product's name"],
-            ["--version", "<version>", "Search by version"],
+            ["--version", "<version>", "Search by product's version"],
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
