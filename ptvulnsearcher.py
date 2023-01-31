@@ -55,11 +55,7 @@ def get_help():
             "ptvulnsearcher -s Apache v2.2",
         ]},
         {"options": [
-            ["search", "<search>", "Search keywords"],
-            ["--cve", "<cve id>", "Search by cve id"],
-            ["--vendor", "<vendor>", "Search by vendor's name"],
-            ["--product", "<product>", "Search by product's name"],
-            ["--version", "<version>", "Search by product's version"],
+            ["search", "search [--cve CVE ID] [--vendor VENDOR] [--product PRODUCT] [--version VERSION]"],
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
@@ -77,7 +73,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
     subparsers = parser.add_subparsers()
-    search = subparsers.add_parser('search')
+    search = subparsers.add_parser('search',help="Search can be based on:\n --cve\n--vendor\n--product\n--vendor & --product\n--vendor & --product & --version\n--product & --version\n")
     search.add_argument('--cve')
     search.add_argument('--vendor')
     search.add_argument('--product')
