@@ -55,7 +55,7 @@ def get_help():
             "ptvulnsearcher -s Apache v2.2",
         ]},
         {"options": [
-            ["search", "search [--cve CVE ID] [--vendor VENDOR] [--product PRODUCT] [--version VERSION]"],
+            ["search", "search [--cve CVE ID] [--vendor VENDOR] [--product PRODUCT] [--version PRODUCT'S VERSION]"],
             ["-j",  "--json", "",  "Output in JSON format"],
             ["-v",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
@@ -80,7 +80,7 @@ def parse_args():
     search.add_argument('--version')
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
-    parser.add_argument("-h","--help", action="get_help", type=get_help)
+    #parser.add_argument("-h","--help", action="get_help", type=get_help)
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
@@ -89,7 +89,8 @@ def parse_args():
     args = parser.parse_args()
 
     if args.cve:
-        cve(args.cve)
+        #cve(args.cve)
+        print(args.cve)
     elif args.vendor:
         vendor(args.vendor)
     elif args.vendor and args.product:

@@ -37,7 +37,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
-search = subparsers.add_parser('search',help="Some help")
+search = subparsers.add_parser('search',help="Search can be based on:\n--cve\n--vendor\n--product\n--vendor & --product\n--vendor & --product & --version\n--product & --version\n")
 search.add_argument('--cve')
 search.add_argument('--vendor')
 args = parser.parse_args()
