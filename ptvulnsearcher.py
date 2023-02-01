@@ -7,8 +7,8 @@ import argparse
 import sys
 import requests
 import json
-from api import cve,vendor, vendor_productname, vendor_productname_version, product_name,productname_version
-
+from api import app, cve, vendor, vendor_productname, vendor_productname_version, product_name, productname_version
+from flask import jsonify
 
 class ptvulnsearcher:
     def __init__(self, args):
@@ -45,6 +45,11 @@ class ptvulnsearcher:
         ptmisclib.ptprint_(ptmisclib.out_if(
             self.ptjsonlib.get_all_json(), "", self.use_json))
 
+def create_app():
+    app = Flask(__name__)
+    with app.app_context():
+        cve()
+    return app
 
 def get_help():
     return [
@@ -88,13 +93,13 @@ def parse_args():
 
     args = parser.parse_args()
 
+
     if args.cve:
-        #cve(args.cve)
-        print(args.cve)
+        print(cve(args.cve))
     elif args.vendor:
-        vendor(args.vendor)
+        print(vendor(args.vendor))
     elif args.vendor and args.product:
-        vendor_productname(args.vendor, args.product)
+        print(vendor_productname(args.vendor, args.product))
     elif args.vendor and args.product and args.version:
         vendor_productname_version(args.vendor,args.product,args.version)
     elif args.product:
@@ -114,7 +119,6 @@ def main():
     args = parse_args()
     script = ptvulnsearcher(args)
     script.run()
-
 
 if __name__ == "__main__":
     main()

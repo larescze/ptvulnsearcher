@@ -34,16 +34,18 @@ args = parser.parse_args()
 print(args.echo)"""
 #-----------------------------------------------------------------------------------------------------
 import argparse
+import api
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
 search = subparsers.add_parser('search',help="Search can be based on:\n--cve\n--vendor\n--product\n--vendor & --product\n--vendor & --product & --version\n--product & --version\n")
-search.add_argument('--cve')
+search.add_argument('--cve', type=api.cve, action="store")
 search.add_argument('--vendor')
 args = parser.parse_args()
 
-if args.cve and args.vendor:
-    print(args.cve,args.vendor)
+if args.cve:
+    api.cve(args.cve)
+    
 else:
     print("/")
 
