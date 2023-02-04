@@ -8,7 +8,6 @@ import sys
 import requests
 import json
 from api import app, cve, vendor, vendor_productname, vendor_productname_version, product_name, productname_version
-from flask import jsonify
 
 class ptvulnsearcher:
     def __init__(self, args):
@@ -45,11 +44,7 @@ class ptvulnsearcher:
         ptmisclib.ptprint_(ptmisclib.out_if(
             self.ptjsonlib.get_all_json(), "", self.use_json))
 
-def create_app():
-    app = Flask(__name__)
-    with app.app_context():
-        cve()
-    return app
+
 
 def get_help():
     return [
@@ -60,9 +55,12 @@ def get_help():
             "ptvulnsearcher -s Apache v2.2",
         ]},
         {"options": [
-            ["search", "search [--cve CVE ID] [--vendor VENDOR] [--product PRODUCT] [--version PRODUCT'S VERSION]"],
+            ["-c","--cve", "Search based on CVE ID"],
+            ["-vn","--vendor-name", "Search based on vendor name"],
+            ["-pn","--product-name", "Search based on product name"],
+            ["-pv","--product-version", "Search based on product version"],
             ["-j",  "--json", "",  "Output in JSON format"],
-            ["-v",  "--version", "", "Show script version and exit"],
+            ["-V",  "--version", "", "Show script version and exit"],
             ["-h", "--help", "", "Show this help message and exit"],
         ]
         }]
@@ -77,12 +75,10 @@ def search_cve(search_string, search_cve):
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
-    subparsers = parser.add_subparsers()
-    search = subparsers.add_parser('search',help="Search can be based on:\n --cve\n--vendor\n--product\n--vendor & --product\n--vendor & --product & --version\n--product & --version\n")
-    search.add_argument('--cve')
-    search.add_argument('--vendor')
-    search.add_argument('--product')
-    search.add_argument('--version')
+    parser.add_argument("-c","--cve")
+    parser.add_argument("-vn","--vendor-name")
+    parser.add_argument("-pn","--product-name")
+    parser.add_argument("-pv","--product-version")
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     #parser.add_argument("-h","--help", action="get_help", type=get_help)
