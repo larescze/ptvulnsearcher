@@ -56,12 +56,12 @@ def get_help():
         ]},
         {"options": [
             ["-c","--cve", "Search based on CVE ID"],
-            ["-vn","--vendor-name", "Search based on vendor name"],
-            ["-pn","--product-name", "Search based on product name"],
-            ["-pv","--product-version", "Search based on product version"],
-            ["-j",  "--json", "",  "Output in JSON format"],
-            ["-V",  "--version", "", "Show script version and exit"],
-            ["-h", "--help", "", "Show this help message and exit"],
+            ["-vn","--vendor_name", "Search based on vendor name"],
+            ["-pn","--product_name", "Search based on product name"],
+            ["-pv","--product_version", "Search based on product version"],
+            ["-j",  "--json","Output in JSON format"],
+            ["-V",  "--version","Show script version and exit"],
+            ["-h", "--help","Show this help message and exit"],
         ]
         }]
 
@@ -76,9 +76,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
     parser.add_argument("-c","--cve")
-    parser.add_argument("-vn","--vendor-name")
-    parser.add_argument("-pn","--product-name")
-    parser.add_argument("-pv","--product-version")
+    parser.add_argument("-vn","--vendor_name")
+    parser.add_argument("-pn","--product_name")
+    parser.add_argument("-pv","--product_version")
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     #parser.add_argument("-h","--help", action="get_help", type=get_help)
@@ -89,19 +89,18 @@ def parse_args():
 
     args = parser.parse_args()
 
-
     if args.cve:
         print(cve(args.cve))
-    elif args.vendor:
-        print(vendor(args.vendor))
-    elif args.vendor and args.product:
-        print(vendor_productname(args.vendor, args.product))
-    elif args.vendor and args.product and args.version:
-        vendor_productname_version(args.vendor,args.product,args.version)
-    elif args.product:
-        product_name(args.product)
-    elif args.product and args.version:
-        productname_version(args.product,args.version)
+    elif args.vendor_name:
+        print(vendor(args.vendor_name))
+    elif args.vendor_name and args.product_name:
+        print(vendor_productname(args.vendor_name, args.product_name))
+    elif args.vendor_name and args.product_name and args.product_version:
+        vendor_productname_version(args.vendor_name,args.product_name,args.product_version)
+    elif args.product_name:
+        product_name(args.product_name)
+    elif args.product_name and args.product_version:
+        productname_version(args.product_name,args.product_version)
     else:
         sys.exit("Invalid input")
 
