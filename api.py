@@ -49,7 +49,7 @@ def cve(cve_id):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Cve.cve_id == cve_id)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)
 
 #Query based on vendor's name
@@ -60,7 +60,7 @@ def vendor(vendor):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)
 
 #Query based on vendor's name and product' name of a vendor
@@ -71,7 +71,7 @@ def vendor_productname(vendor, product_name):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)
 
 #Query based on vendor's name, product's name and version of the product of a vendor
@@ -82,7 +82,7 @@ def vendor_productname_version(vendor, product_name, version):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name).where(Vendor.version==version)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)
 
 #Query based on product's name
@@ -93,7 +93,7 @@ def product_name(product_name):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)
         
 #Query based on product's name and version of the product
@@ -104,7 +104,7 @@ def productname_version(product_name, version):
             result = []
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name).where(Vendor.version==version)
             for row in session.execute(statement):
-                result.append(dict(row))
+                result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
             return jsonify(result)    
 
 if __name__ == "__main__":

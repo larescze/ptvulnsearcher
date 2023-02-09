@@ -16,9 +16,9 @@ class ptvulnsearcher:
         self.use_json = args.json
         self.args = args
 
-    def run(self):
-        if self.args.search or self.args.cve:
-            vulns = search_cve(self.args.search, self.args.cve)
+    def run(self): 
+        if self.args.cve: #POKRACOVAT
+            vulns = cve(self.args.cve)
             if self.args.json:
                 print(vulns)
             else:
@@ -26,20 +26,37 @@ class ptvulnsearcher:
                 ptmisclib.ptprint_(ptmisclib.out_ifnot(
                     f"Found {len(vulns)} CVE Records", "INFO", self.use_json))
                 for vuln in vulns:
-                    cve = vuln["cve"]
+                    cve = vuln["cve_id"]
+                    cwe = vuln["cwe_id"]
+                    cvss_vector = vulns["cvss_vector"]
+                    cvss_score = vulns["cvss_score"]
                     desc = vuln["description"]
-                    score = vuln["cvss_score"] if vuln["cvss_score"] else "Not defined"
-                    vector = vuln["cvss_string"] if vuln["cvss_string"] else "Not defined"
+                    vendor = vulns["vendor"]
+                    product_type = ["product_type"]
+                    product_name = ["product_name"]
+                    version = vulns["version"]
                     ptmisclib.ptprint_(
                         ptmisclib.out_ifnot(f" ", "", self.use_json))
                     ptmisclib.ptprint_(ptmisclib.out_title_ifnot(
                         f"{cve}", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Description:", color="TITLE")} {desc}', "", self.use_json))
+                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Cve ID:", color="TITLE")} {cve}', "", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Score:", color="TITLE")} {score}', "", self.use_json))
+                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Cwe ID:", color="TITLE")} {cwe}', "", self.use_json))
                     ptmisclib.ptprint_(
-                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Vector:", color="TITLE")} {vector}', "", self.use_json))
+                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("CVSS Vector:", color="TITLE")} {cvss_vector}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("CVSS Score:", color="TITLE")} {cvss_score}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Description:", color="TITLE")} {desc}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Vendor:", color="TITLE")} {vendor}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product name:", color="TITLE")} {product_name}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product type:", color="TITLE")} {product_type}', "", self.use_json))
+                    ptmisclib.ptprint_(
+                        ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Version:", color="TITLE")} {version}', "", self.use_json))
             sys.exit(0)
         ptmisclib.ptprint_(ptmisclib.out_if(
             self.ptjsonlib.get_all_json(), "", self.use_json))
@@ -75,7 +92,7 @@ def search_cve(search_string, search_cve):
 def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
-    parser.add_argument("-c","--cve")
+    parser.add_argument("-cve","--cve")
     parser.add_argument("-vn","--vendor_name")
     parser.add_argument("-pn","--product_name")
     parser.add_argument("-pv","--product_version")
@@ -90,7 +107,7 @@ def parse_args():
     args = parser.parse_args()
 
     if args.cve:
-        print(cve(args.cve))
+        cve(args.cve)
     elif args.vendor_name:
         print(vendor(args.vendor_name))
     elif args.vendor_name and args.product_name:
