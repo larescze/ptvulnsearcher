@@ -17,44 +17,45 @@ class ptvulnsearcher:
         self.args = args
 
     def load_json_data(self,vulns):
-        vulns = json.loads(dict(vulns)) #POKRACOVAT
+        vulns = json.loads(vulns) #POKRACOVAT
         ptmisclib.ptprint_(ptmisclib.out_ifnot(
             f"Found {len(vulns)} CVE Records", "INFO", self.use_json))
-        for vuln in vulns:
-            cveid = vuln["cve_id"]
-            cwe = vuln["cwe_id"]
-            cvss_vector = vuln["cvss_vector"]
-            cvss_score = vuln["cvss_score"]
-            desc = vuln["description"]
-            vendor = vuln["vendor"]
-            product_type = vuln["product_type"]
-            product_name = vuln["product_name"]
-            version = vuln["version"]
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f" ", "", self.use_json))
-            ptmisclib.ptprint_(ptmisclib.out_title_ifnot(
-                f"{cve}", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Cve ID: ", color="TITLE")} {cveid}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("CVSS Vector: ", color="TITLE")} {cvss_vector}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'\n{ptmisclib.get_colored_text("CVSS Score: ", color="TITLE")} {cvss_score}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Description: ", color="TITLE")} {desc}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Vendor: ", color="TITLE")} {vendor}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product name: ", color="TITLE")} {product_name}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product type: ", color="TITLE")} {product_type}', "", self.use_json))
-            ptmisclib.ptprint_(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Version: ", color="TITLE")} {version}', "", self.use_json))
+        while(True):
+            for vuln in vulns:
+                cveid = vuln["cve_id"]
+                cwe = vuln["cwe_id"]
+                cvss_vector = vuln["cvss_vector"]
+                cvss_score = vuln["cvss_score"]
+                desc = vuln["description"]
+                vendor = vuln["vendor"]
+                product_type = vuln["product_type"]
+                product_name = vuln["product_name"]
+                version = vuln["version"]
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f" ", "", self.use_json))
+                ptmisclib.ptprint_(ptmisclib.out_title_ifnot(
+                    f"{cve}", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Cve ID: ", color="TITLE")} {cveid}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Vector: ", color="TITLE")} {cvss_vector}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Score: ", color="TITLE")} {cvss_score}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Description: ", color="TITLE")} {desc}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Vendor: ", color="TITLE")} {vendor}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product name: ", color="TITLE")} {product_name}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product type: ", color="TITLE")} {product_type}', "", self.use_json))
+                ptmisclib.ptprint_(
+                    ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Version: ", color="TITLE")} {version}', "", self.use_json))
+            ptmisclib.ptprint_(ptmisclib.out_if(self.ptjsonlib.get_all_json(), "", self.use_json))
             sys.exit(0)
-        ptmisclib.ptprint_(ptmisclib.out_if(
-            self.ptjsonlib.get_all_json(), "", self.use_json))
+        
             
 
     def run(self): 
