@@ -1,7 +1,10 @@
+#!/usr/bin/python3
 import psycopg2
 import requests
 import csv
+import json
 from time import sleep
+
 
 class DataCollector:
 
@@ -25,7 +28,7 @@ class DataCollector:
             print("Connection failed\n")
             print(e)
     
-    def create_tables(self):
+    def db_create_tables(self):
         """Function responsible for creation of tables within the database"""
         try:
             db_connection = self.connection()
@@ -51,7 +54,7 @@ class DataCollector:
                     vendor TEXT,                    
                     product_type VARCHAR(11),              
                     product_name TEXT,           
-                    version VARCHAR(10),
+                    version TEXT,
                     FOREIGN KEY (cveid) REFERENCES cve(id)
                 );
                 """)
@@ -65,100 +68,71 @@ class DataCollector:
 
 
     def csv_file_reader(self):
-        """Function reads CVE values (CVE-####-####,) from CSV file and populates 'cve_id' column with them"""
 
-        #Database connection
-        db_connection = self.connection()
+        with open('allitems.csv', mode='r', encoding='iso8859') as csv_file:  # Download from https://www.cve.org/Downloads
+            reader = csv.DictReader(csv_file)
 
-        #Open file and 'cve-id' data into db
-        with open('allitems.csv', mode='r', encoding='cp437') as csv_file:  # Download from https://www.cve.org/Downloads
-            reader = csv.reader(csv_file)
-
-            # Used to skip CSV header -> Using  'reader = csv.DictReader(csvfile)' won't strip the header 
-            for i in range(10):
-                next(reader, None)
-        
-            #'cursor' allows Python code to execute SQL queries in a database session.
-            cve_table_cursor = db_connection.cursor() # Cursor for 'cve' table
-            vendor_table_cursor = db_connection.cursor() # Cursor for 'vendor' table
-
-            for lines in reader:
-                cve_table_cursor.execute("INSERT INTO cve (cve_id) VALUES (%s)", (lines[0],))
-
-            print("Data have been successfully inserted ")
-            cve_table_cursor.close()
-            vendor_table_cursor.close()
-            db_connection.close()
-
-    def cve_api_requests(self):
-        """Function reads values of'cve_id'column of 'cve' table and makes a request based on them.
-           Then, cve_id, cvss_vector, cvss_score and description data are taken from the response and are inserted into database."""
-        try:
-            #Database connection
-            db_connection = self.connection()
+            #Haven't found any other way to skip .csv header
+            for i in range(9):
+                next(reader)
+            
+            for line in reader:
+                yield line['CVE Version 20061101'] #CVE-####-#### information is gonna be yielded by this
     
-            #Cursors need to be defined out of if/else statement otherwise 'UnboundLocalError: local variable 'cursor' referenced before assignment' is raised
-            cve_table_reading = db_connection.cursor() #'cve_table_reading' cursor for reading 'cve_id' column from DB
-            cve_table_update = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
-            vendor_table_insert = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
-
-            #Reading 'cve_id' column values on which the requests are based
-            cve_table_reading.execute("SELECT cve_id FROM cve") 
-
-            record_number = 1 #Used for determination of which line is being UPDATEd
-            request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
-
-            while(True):
-                cve_id_record = [row for row in cve_table_reading.fetchone()]
-                record = cve_id_record[0]   # = CVE-####-####
-                
-                #Making request
-                request = requests.get("https://cve.circl.lu/api/cve/%s" % record)
-                print("Request on: %s" % record)
-                    
-                #Getting response back in JSON format 
-                response = request.json()
-                
-                #This line is used to handle situation when one or more keys of response ('cwe',cvss_v . . . ) aren't present in a response. Because i do not handle the Exception that is risen then, data, from request before are left and not overridden by the new one, because it's not there -> that's why i'am setting the values initially and letting them be overridden, so if no values is present in response the initial 'None' or 0.0 remains.
-                (cwe,cvss_v,cvss_s,description,product_t,vendor,product_n,product_v) = ("None","None",0.0,"None","None","None","None",0.0)
-
-                #Picking data from JSON response
-                try:
-                    cwe = response["cwe"]
-                    cvss_v = response["cvss-vector"]
-                    cvss_s = response["cvss"]
-                    description = response["summary"]
-                    product_t = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
-                    vendor = response["vulnerable_product"][-1].split(":")[3].title()    #title() capitalize first letter of the record
-                    product_n = response["vulnerable_product"][-1].split(":")[4]
-                    product_v = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
-                except Exception:
-                    None
-
-                cve_table_update.execute("UPDATE cve SET cwe_id=%s, cvss_vector=%s, cvss_score=%s, description=%s WHERE id=%s", (cwe, cvss_v, cvss_s, description, record_number, ))
-                vendor_table_insert.execute("INSERT INTO vendor (vendor, product_type, product_name, version) VALUES (%s, %s, %s, %s)", (vendor, product_t,product_n, product_v,))
-                
-                request.close()
-                record_number=record_number+1 #Move to next line
-                request_counter=request_counter+1
-                
-                if request_counter == 181:
-                    sleep(60)
-                    request_counter = 1
-                
-        finally:
-            cve_table_reading.close()
-            cve_table_update.close()
-            vendor_table_insert.close()
-            db_connection.close()
+    def api_request(self):
+        for cve_id in self.csv_file_reader():
+            print(cve_id)
+            request = requests.get("https://cve.circl.lu/api/cve/%s" % cve_id)
+            response = request.json()
         
+            line_to_be_inserted = {'cveid':"-", 'cwe':"-", 'cvss_vector':"-",'cvss_score':0.0, 'description':"-", 'product_type':"-",'vendor':"-",'product_name':"-", 'product_version':0.0}
 
+            try:
+                line_to_be_inserted['cveid'] = response["id"]
+                line_to_be_inserted['cwe'] = response["cwe"]
+                line_to_be_inserted['cvss_vector'] = response["cvss-vector"]
+                line_to_be_inserted['cvss_score'] = response["cvss"]
+                line_to_be_inserted['description'] = response["summary"]
+                line_to_be_inserted['product_type'] = response["vulnerable_product"][-1].split(":")[2].upper() #Application. OS, . . . 
+                line_to_be_inserted['vendor'] = response["vulnerable_product"][-1].split(":")[3].title()    #title() capitalize first letter of the record
+                line_to_be_inserted['product_name'] = response["vulnerable_product"][-1].split(":")[4]
+                line_to_be_inserted['product_version'] = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
+            except Exception:
+                "-"
+            
+                
+            yield line_to_be_inserted
+   
 
+    def db_insert(self):
+        
+        db_connection = self.connection()
+   
+        cve_table_insert = db_connection.cursor() #'cve_table_update' cursor to handle UPDATEs of 'cve' table
+        vendor_table_insert = db_connection.cursor() #'vendor_table_update' cursor to handle UPDATEs of 'vendor' table
 
-#An instance of 'DataCollector' class
+        #record_number = 1 #Used for determination of which line is being UPDATEd
+        request_counter = 1 #Used to control how many requests have been made already and set the limit for the PAUSE
+
+        for line in self.api_request():
+            cve_table_insert.execute("INSERT INTO  cve (cve_id, cwe_id, cvss_vector, cvss_score, description) VALUES (%s, %s, %s, %s, %s)", (line['cveid'],line['cwe'], line['cvss_vector'], line['cvss_score'], line['description'], ))
+            vendor_table_insert.execute("INSERT INTO vendor (vendor, product_type, product_name, version) VALUES (%s, %s, %s, %s)", (line['vendor'], line['product_type'],line['product_name'], line['product_version'], ))
+            print("Record: %s has been inserted" % line['cveid'])
+            request_counter = request_counter + 1 
+            if request_counter == 181:
+                print("PAUSED FOR 60s")
+                sleep(60)
+                request_counter = 1
+        
+        cve_table_insert.close()
+        vendor_table_insert.close()
+        db_connection.close()
+                
+                
+            
 instance = DataCollector()
-#Calling class methods
-instance.create_tables()
+instance.db_create_tables()
 instance.csv_file_reader()
-instance.cve_api_requests()
+instance.api_request()
+instance.db_insert()
 
