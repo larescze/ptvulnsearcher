@@ -32,26 +32,83 @@ parser = argparse.ArgumentParser()
 parser.add_argument("echo", help="enter whatever you want")
 args = parser.parse_args()
 print(args.echo)"""
+
 #-----------------------------------------------------------------------------------------------------
-import argparse
-import api
+"""with open('allitems.csv', 'r', encoding='utf-8') as file:
+    content = file.readlines()
+header1 = content[:10]
+header2 = content[10]
+print(header1)
+print("\n")
+print(header2)"""
+#-----------------------------------------------------------------------------------------------------
+import csv
 
-parser = argparse.ArgumentParser()
-subparsers = parser.add_subparsers()
-search = subparsers.add_parser('search',help="Search can be based on:\n--cve\n--vendor\n--product\n--vendor & --product\n--vendor & --product & --version\n--product & --version\n")
-search.add_argument('--cve', type=api.cve, action="store")
-search.add_argument('--vendor')
-args = parser.parse_args()
+import requests
 
-if args.cve:
-    api.cve(args.cve)
+
+def csv_file_reader():
+
+    #Open file and 'cve-id' data into db
+    with open('allitems.csv', mode='r', encoding='iso8859') as csv_file:  # Download from https://www.cve.org/Downloads
+        reader = csv.DictReader(csv_file)
+
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+        next(reader)
+
+       
+        for line in reader:
+            yield line
+        
+for cve_id in csv_file_reader():
+    print(cve_id)
     
-else:
-    print("/")
+
+#-----------------------------------------------------------------------------------------------------
+"""def csv_file_reader():
+    with open('allitems.csv', mode='r', encoding='iso8859') as csv_file:  # Download from https://www.cve.org/Downloads
+        reader = csv.DictReader(csv_file)
+
+        for i in reader:
+            print(i['CVE Version 20061101'])
+            
+
+csv_file_reader()"""
+
+
+#-----------------------------------------------------------------------------------------------------
 
 
 
-               
+"""# importing the csv library
+import csv
+ 
+# opening the csv file
+with open('allitems.csv',encoding='iso8859') as csv_file:
+ 
+        # reading the csv file using DictReader
+    csv_reader = csv.DictReader(csv_file)
+ 
+    # converting the file to dictionary
+    # by first converting to list
+    # and then converting the list to dict
+    dict_from_csv = dict(list(csv_reader)[0])
+ 
+    # making a list from the keys of the dict
+    list_of_column_names = list(dict_from_csv.keys())
+ 
+    # displaying the list of column names
+    print("List of column names : ",
+          list_of_column_names)"""
+
+
 
 
 
