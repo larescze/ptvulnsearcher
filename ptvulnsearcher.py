@@ -17,7 +17,7 @@ class ptvulnsearcher:
         self.args = args
 
     def load_json_data(self,vulns):
-        vulns = json.loads(vulns) #POKRACOVAT
+        vulns = json.loads(vulns) 
         ptmisclib.ptprint_(ptmisclib.out_ifnot(
             f"Found {len(vulns)} CVE Records", "INFO", self.use_json))
         while(True):
@@ -57,7 +57,6 @@ class ptvulnsearcher:
             sys.exit(0)
         
             
-
     def run(self): 
         if self.args.cve: #POKRACOVAT
             vulns = cve(self.args.cve)
@@ -71,8 +70,8 @@ class ptvulnsearcher:
                 print(vulns)
             else: 
                 print(self.load_json_data(vulns))
-        elif self.args.args.vendor_name and self.args.product_name:
-            vulns = vendor_productname(self.args.args.vendor_name,self.args.product_name)
+        elif ((self.args.vendor_name) and (self.args.product_name)):
+            vulns = vendor_productname(self.args.vendor_name,self.args.product_name)
             if self.args.json:
                 print(vulns)
             else: 
@@ -129,9 +128,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False, usage=f"{SCRIPTNAME} <options>")
     parser.add_argument("-cve","--cve")
-    parser.add_argument("-vn","--vendor_name")
-    parser.add_argument("-pn","--product_name")
-    parser.add_argument("-pv","--product_version")
+    parser.add_argument("-vn","--vendor_name", dest="vendor_name")
+    parser.add_argument("-pn","--product_name",dest="product_name")
+    parser.add_argument("-pv","--product_version", dest="product_version")
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     #parser.add_argument("-h","--help", action="get_help", type=get_help)
@@ -141,21 +140,6 @@ def parse_args():
         sys.exit(0)
 
     args = parser.parse_args()
-
-    if args.cve:
-        cve(args.cve)
-    elif args.vendor_name:
-        print(vendor(args.vendor_name))
-    elif args.vendor_name and args.product_name:
-        print(vendor_productname(args.vendor_name, args.product_name))
-    elif args.vendor_name and args.product_name and args.product_version:
-        vendor_productname_version(args.vendor_name,args.product_name,args.product_version)
-    elif args.product_name:
-        product_name(args.product_name)
-    elif args.product_name and args.product_version:
-        productname_version(args.product_name,args.product_version)
-    else:
-        sys.exit("Invalid input")
 
     ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
     return args
