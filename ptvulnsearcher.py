@@ -57,45 +57,26 @@ class ptvulnsearcher:
             sys.exit(0)
         
             
-    def run(self): 
-        if self.args.cve: #POKRACOVAT
+    def run(self):
+        if self.args.cve:
             vulns = cve(self.args.cve)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
-        elif self.args.vendor_name: #POKRACOVAT
-            vulns = vendor(self.args.vendor_name)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
-        elif ((self.args.vendor_name) and (self.args.product_name)):
-            vulns = vendor_productname(self.args.vendor_name,self.args.product_name)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
         elif self.args.vendor_name and self.args.product_name and self.args.product_version:
-            vulns = vendor_productname_version(self.args.vendor_name,self.args.product_name,self.args.product_version)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
-        elif self.args.product_name:
-            vulns = product_name(self.args.product_name)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
+            vulns = vendor_productname_version(self.args.vendor_name, self.args.product_name, self.args.product_version)
+        elif self.args.vendor_name and self.args.product_name:
+            vulns = vendor_productname(self.args.vendor_name, self.args.product_name)
         elif self.args.product_name and self.args.product_version:
             vulns = productname_version(self.args.product_name, self.args.product_version)
-            if self.args.json:
-                print(vulns)
-            else: 
-                print(self.load_json_data(vulns))
+        elif self.args.product_name:
+            vulns = product_name(self.args.product_name)
+        elif self.args.vendor_name:
+            vulns = vendor(self.args.vendor_name)
         else:
             print("Invalid input!")
+            return
+        if self.args.json:
+            print(vulns)
+        else: 
+            print(self.load_json_data(vulns))
     
 
 def get_help():

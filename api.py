@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship, Session
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from flask import Flask, json
+import json as j
 
 
 app = Flask(__name__)
@@ -50,7 +51,7 @@ def cve(cve_id):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Cve.cve_id == cve_id)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
 
 #Query based on vendor's name
 @app.route("/api/v1/vendor/<string:vendor>")
@@ -61,7 +62,7 @@ def vendor(vendor):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
 
 #Query based on vendor's name and product' name of a vendor
 @app.route("/api/v1/vendor/<string:vendor>/product/<string:product_name>")
@@ -72,7 +73,7 @@ def vendor_productname(vendor, product_name):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
 
 #Query based on vendor's name, product's name and version of the product of a vendor
 @app.route("/api/v1/vendor/<string:vendor>/product/<string:product_name>/version/<string:version>")
@@ -83,7 +84,7 @@ def vendor_productname_version(vendor, product_name, version):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.vendor == vendor).where(Vendor.product_name==product_name).where(Vendor.version==version)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
 
 #Query based on product's name
 @app.route("/api/v1/product/<string:product_name>")
@@ -94,7 +95,7 @@ def product_name(product_name):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
         
 #Query based on product's name and version of the product
 @app.route("/api/v1/product/<string:product_name>/version/<string:version>")
@@ -105,11 +106,11 @@ def productname_version(product_name, version):
             statement = select(Cve.cve_id, Cve.cwe_id, Cve.cvss_vector,Cve.cvss_score, Cve.description, Vendor.vendor, Vendor.product_type, Vendor.product_name, Vendor.version).join(Cve.vendors).where(Vendor.product_name==product_name).where(Vendor.version==version)
             for row in session.execute(statement):
                 result.append({'cve_id':row.cve_id, 'cwe_id':row.cwe_id, 'cvss_vector':row.cvss_vector,'cvss_score':row.cvss_score, 'description':row.description, 'vendor':row.vendor, 'product_type':row.product_type, 'product_name':row.product_name, 'version':row.version})
-            return json.dumps(result, sort_keys=True, indent='\t', separators=(',', ': '))    
+            return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))    
 
 if __name__ == "__main__":
-    #app.run(debug=True)
-    app.run()
+    app.run(debug=True)
+    #app.run()
     
    
 
