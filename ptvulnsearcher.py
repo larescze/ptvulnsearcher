@@ -13,7 +13,7 @@ import logging
 
 class ptvulnsearcher:
     def __init__(self, args):
-        logging.disable(logging.CRITICAL) #Disabling all loging =< CRITICAL
+        logging.disable(logging.CRITICAL) #Disabling all logging =< CRITICAL
         self.ptjsonlib = ptjsonlib.ptjsonlib(args.json)
         self.json_no = self.ptjsonlib.add_json("ptvulnsearcher")
         self.use_json = args.json
