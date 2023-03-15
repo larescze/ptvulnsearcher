@@ -28,11 +28,13 @@ ptvulnsearcher -cve CVE-2022-29885            # Search specified CVE
 
 ## Options
 ```
-   -s   --search              <search>        Search keywords
-   -cve --cve                 <cve>           Search for specific CVE
-   -j   --json                                Output in JSON format
-   -v   --version                             Show script version and exit
-   -h   --help                                Show this help message and exit
+   -cve  --cve              <CVE ID>           Search based on CVE ID
+   -vn   --vendor_name      <vendor_name>      Search based on vendor name
+   -pn   --product_name     <product_name>     Search based on product name
+   -pv   --product_version  <product_version>  Search based on product version
+   -j    --json                                Output in JSON format
+   -v    --version                             Show script version and exit
+   -h    --help                                Show this help message and exit
 ```
 
 ## Dependencies
