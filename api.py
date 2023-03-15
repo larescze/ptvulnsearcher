@@ -108,8 +108,8 @@ def productname_version(product_name, version):
             return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))    
 
 if __name__ == "__main__":
-    app.run(debug=True)
-    #app.run()
+    #app.run(debug=True)
+    app.run()
     
    
 

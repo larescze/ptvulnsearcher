@@ -8,6 +8,9 @@ import sys
 import requests
 import json
 from api import cve, vendor, vendor_productname, vendor_productname_version, product_name, productname_version
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 
 class ptvulnsearcher:
     def __init__(self, args):
