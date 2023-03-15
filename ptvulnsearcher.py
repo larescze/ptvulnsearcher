@@ -114,7 +114,7 @@ def parse_args():
     parser.add_argument("-pv","--product_version", dest="product_version")
     parser.add_argument("-j", "--json", action="store_true")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
-    #parser.add_argument("-h","--help", action="get_help", type=get_help)
+    parser.add_argument("-h","--help", action="store", help=get_help())
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)

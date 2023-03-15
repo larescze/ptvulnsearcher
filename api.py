@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship, Session
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from flask import Flask, json
-import json as j
 
 
 app = Flask(__name__)

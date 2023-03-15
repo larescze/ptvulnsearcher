@@ -99,11 +99,9 @@ class DataCollector:
                 line_to_be_inserted['product_version'] = response["vulnerable_product"][-1].split(":")[5].split('\\')[0]
             except Exception:
                 "-"
-            
-                
+      
             yield line_to_be_inserted
    
-
     def db_insert(self):
         
         db_connection = self.connection()
@@ -128,8 +126,7 @@ class DataCollector:
         vendor_table_insert.close()
         db_connection.close()
                 
-                
-            
+                      
 instance = DataCollector()
 instance.db_create_tables()
 instance.csv_file_reader()
