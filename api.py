@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import logging
 from sqlalchemy import String, Float, Text, Column, ForeignKey
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship, Session

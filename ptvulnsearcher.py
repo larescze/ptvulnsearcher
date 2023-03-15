@@ -10,10 +10,10 @@ import json
 from api import cve, vendor, vendor_productname, vendor_productname_version, product_name, productname_version
 import logging
 
-logging.basicConfig(level=logging.ERROR)
 
 class ptvulnsearcher:
     def __init__(self, args):
+        logging.disable(logging.CRITICAL) #Disabling all loging =< CRITICAL
         self.ptjsonlib = ptjsonlib.ptjsonlib(args.json)
         self.json_no = self.ptjsonlib.add_json("ptvulnsearcher")
         self.use_json = args.json
@@ -91,13 +91,13 @@ def get_help():
             "ptvulnsearcher -s Apache v2.2",
         ]},
         {"options": [
-            ["-cve","--cve", "Search based on CVE ID"],
-            ["-vn","--vendor_name", "Search based on vendor name"],
-            ["-pn","--product_name", "Search based on product name"],
-            ["-pv","--product_version", "Search based on product version"],
-            ["-j",  "--json","Output in JSON format"],
-            ["-v",  "--version","Show script version and exit"],
-            ["-h", "--help","Show this help message and exit"],
+            ["-cve","--cve", "<cve>", "Search based on CVE ID"],
+            ["-vn","--vendor_name", "<vendor_name>", "Search based on vendor name"],
+            ["-pn","--product_name","<product_name>", "Search based on product name"],
+            ["-pv","--product_version","<product_version>", "Search based on product version"],
+            ["-j","--json","","Output in JSON format"],
+            ["-v","--version","","Show script version and exit"],
+            ["-h","--help","","Show this help message and exit"],
         ]
         }]
 
