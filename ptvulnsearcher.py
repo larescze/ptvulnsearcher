@@ -40,9 +40,9 @@ class ptvulnsearcher:
                 ptprinthelper.ptprint(
                     ptprinthelper.out_ifnot(f" ", "", self.use_json))
                 ptprinthelper.ptprint(ptprinthelper.out_title_ifnot(
-                    f"{cve}", self.use_json))
-                ptprinthelper.ptprint(
-                    ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cve ID: ", color="TITLE")} {cveid}', "", self.use_json))
+                    f"{cveid}", self.use_json))
+                """ptprinthelper.ptprint(
+                    ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cve ID: ", color="TITLE")} {cveid}', "", self.use_json))"""
                 ptprinthelper.ptprint(
                     ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
                 ptprinthelper.ptprint(
