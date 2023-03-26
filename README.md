@@ -47,7 +47,9 @@ Python 3.6+ is required.
 ## Version History
 * 0.0.1
     * Alpha releases
-
+* 0.0.2
+    * New options
+    
 ## License
 
 Copyright (c) 2022 HACKER Consulting s.r.o.
