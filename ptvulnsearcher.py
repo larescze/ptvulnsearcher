@@ -14,9 +14,7 @@ import logging
 class ptvulnsearcher:
     def __init__(self, args):
         logging.disable(logging.CRITICAL) #Disabling all logging =< CRITICAL
-        #self.ptjsonlib = ptjsonlib.ptjsonlib(args.json)
         self.ptjsonlib = ptjsonlib.PtJsonLib(args.json)
-        #self.json_no = self.ptjsonlib.add_json("ptvulnsearcher")
         self.json_no = self.ptjsonlib.add_property("ptvulnsearcher", 0)
 
         self.use_json = args.json
@@ -41,8 +39,6 @@ class ptvulnsearcher:
                     ptprinthelper.out_ifnot(f" ", "", self.use_json))
                 ptprinthelper.ptprint(ptprinthelper.out_title_ifnot(
                     f"{cveid}", self.use_json))
-                """ptprinthelper.ptprint(
-                    ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cve ID: ", color="TITLE")} {cveid}', "", self.use_json))"""
                 ptprinthelper.ptprint(
                     ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
                 ptprinthelper.ptprint(
