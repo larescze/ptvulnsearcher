@@ -7,8 +7,15 @@ import argparse
 import sys
 import requests
 import json
-from api import cve, vendor, vendor_productname, vendor_productname_version, product_name, productname_version
 import logging
+from dotenv import load_dotenv
+from pathlib import Path  
+import os
+
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
+IP_ADDRESS = os.getenv("IP")
+PORT = os.getenv("PORT")
 
 
 class ptvulnsearcher:
@@ -61,17 +68,23 @@ class ptvulnsearcher:
             
     def run(self):
         if self.args.cve:
-            vulns = cve(self.args.cve)
+            url = "http://%s:%s/api/v1/cve/%s",IP_ADDRESS, PORT, self.args.cve
+            vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name and self.args.product_version:
-            vulns = vendor_productname_version(self.args.vendor_name, self.args.product_name, self.args.product_version)
+            url = "http://%s:%s/api/v1/vendor/%s/product/%s/version/%s",IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name,self.args.product_version
+            vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name:
-            vulns = vendor_productname(self.args.vendor_name, self.args.product_name)
+            url = "http://%s:%s/api/v1/vendor/%s/product/%s",IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name
+            vulns = requests.get(url).json
         elif self.args.product_name and self.args.product_version:
-            vulns = productname_version(self.args.product_name, self.args.product_version)
+            url = "http://%s:%s/api/v1/product/%s/version/%s",IP_ADDRESS, PORT,self.args.product_name,self.args.product_version
+            vulns = requests.get(url).json
         elif self.args.product_name:
-            vulns = product_name(self.args.product_name)
+            url = "http://%s:%s/api/v1/product/%s",IP_ADDRESS, PORT,self.args.product_name
+            vulns = requests.get(url).json
         elif self.args.vendor_name:
-            vulns = vendor(self.args.vendor_name)
+            url = "http://%s:%s/api/v1/vendor/%s",IP_ADDRESS, PORT,self.args.vendor_name
+            vulns = requests.get(url).json
         else:
             print("Invalid input!")
             return
