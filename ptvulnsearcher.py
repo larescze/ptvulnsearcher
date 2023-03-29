@@ -68,22 +68,22 @@ class ptvulnsearcher:
             
     def run(self):
         if self.args.cve:
-            url = "http://%s:%s/api/v1/cve/%s",IP_ADDRESS, PORT, self.args.cve
+            url = "http://%s:%s/api/v1/cve/%s" % IP_ADDRESS, PORT, self.args.cve
             vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name and self.args.product_version:
-            url = "http://%s:%s/api/v1/vendor/%s/product/%s/version/%s",IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name,self.args.product_version
+            url = "http://%s:%s/api/v1/vendor/%s/product/%s/version/%s" % (IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name,self.args.product_version)
             vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name:
-            url = "http://%s:%s/api/v1/vendor/%s/product/%s",IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name
+            url = "http://%s:%s/api/v1/vendor/%s/product/%s" % (IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name)
             vulns = requests.get(url).json
         elif self.args.product_name and self.args.product_version:
-            url = "http://%s:%s/api/v1/product/%s/version/%s",IP_ADDRESS, PORT,self.args.product_name,self.args.product_version
+            url = "http://%s:%s/api/v1/product/%s/version/%s" % (IP_ADDRESS, PORT,self.args.product_name,self.args.product_version)
             vulns = requests.get(url).json
         elif self.args.product_name:
-            url = "http://%s:%s/api/v1/product/%s",IP_ADDRESS, PORT,self.args.product_name
+            url = "http://%s:%s/api/v1/product/%s" % (IP_ADDRESS, PORT,self.args.product_name)
             vulns = requests.get(url).json
         elif self.args.vendor_name:
-            url = "http://%s:%s/api/v1/vendor/%s",IP_ADDRESS, PORT,self.args.vendor_name
+            url = "http://%s:%s/api/v1/vendor/%s" % (IP_ADDRESS, PORT,self.args.vendor_name)
             vulns = requests.get(url).json
         else:
             print("Invalid input!")
