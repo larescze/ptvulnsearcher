@@ -2,7 +2,7 @@
 
 __version__ = "0.0.1"
 
-from ptlibs import ptjsonlib, ptmisclib, ptprinthelper
+from ptlibs import ptjsonlib, ptprinthelper
 import argparse
 import sys
 import requests
@@ -17,6 +17,7 @@ load_dotenv(dotenv_path=env_path)
 IP_ADDRESS = os.getenv("IP")
 PORT = os.getenv("PORT")
 
+BASE_URL = "http://%s:%s/api/v1/" % (IP_ADDRESS, PORT)
 
 class ptvulnsearcher:
     def __init__(self, args):
@@ -68,22 +69,22 @@ class ptvulnsearcher:
             
     def run(self):
         if self.args.cve:
-            url = "http://%s:%s/api/v1/cve/%s" % IP_ADDRESS, PORT, self.args.cve
+            url = BASE_URL+"cve/%s" % self.args.cve
             vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name and self.args.product_version:
-            url = "http://%s:%s/api/v1/vendor/%s/product/%s/version/%s" % (IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name,self.args.product_version)
+            url = BASE_URL+"vendor/%s/product/%s/version/%s" % (self.args.vendor_name,self.args.product_name,self.args.product_version)
             vulns = requests.get(url).json
         elif self.args.vendor_name and self.args.product_name:
-            url = "http://%s:%s/api/v1/vendor/%s/product/%s" % (IP_ADDRESS, PORT,self.args.vendor_name,self.args.product_name)
+            url = BASE_URL+"vendor/%s/product/%s" % (self.args.vendor_name,self.args.product_name)
             vulns = requests.get(url).json
         elif self.args.product_name and self.args.product_version:
-            url = "http://%s:%s/api/v1/product/%s/version/%s" % (IP_ADDRESS, PORT,self.args.product_name,self.args.product_version)
+            url = BASE_URL+"product/%s/version/%s" % (self.args.product_name,self.args.product_version)
             vulns = requests.get(url).json
         elif self.args.product_name:
-            url = "http://%s:%s/api/v1/product/%s" % (IP_ADDRESS, PORT,self.args.product_name)
+            url = BASE_URL+"product/%s" % self.args.product_name
             vulns = requests.get(url).json
         elif self.args.vendor_name:
-            url = "http://%s:%s/api/v1/vendor/%s" % (IP_ADDRESS, PORT,self.args.vendor_name)
+            url = BASE_URL+"vendor/%s" % self.args.vendor_name
             vulns = requests.get(url).json
         else:
             print("Invalid input!")
@@ -132,13 +133,10 @@ def parse_args():
     parser.add_argument("-h","--help", action="store", help=get_help())
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
-        #ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
         ptprinthelper.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
 
     args = parser.parse_args()
-
-    #ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
     ptprinthelper.print_banner(SCRIPTNAME, __version__, args.json)
     return args
 
