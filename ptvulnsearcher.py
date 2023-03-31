@@ -70,22 +70,22 @@ class ptvulnsearcher:
     def run(self):
         if self.args.cve:
             url = BASE_URL+"cve/%s" % self.args.cve
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         elif self.args.vendor_name and self.args.product_name and self.args.product_version:
             url = BASE_URL+"vendor/%s/product/%s/version/%s" % (self.args.vendor_name,self.args.product_name,self.args.product_version)
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         elif self.args.vendor_name and self.args.product_name:
             url = BASE_URL+"vendor/%s/product/%s" % (self.args.vendor_name,self.args.product_name)
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         elif self.args.product_name and self.args.product_version:
             url = BASE_URL+"product/%s/version/%s" % (self.args.product_name,self.args.product_version)
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         elif self.args.product_name:
             url = BASE_URL+"product/%s" % self.args.product_name
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         elif self.args.vendor_name:
             url = BASE_URL+"vendor/%s" % self.args.vendor_name
-            vulns = requests.get(url).json
+            vulns = requests.get(url).text
         else:
             print("Invalid input!")
             return
