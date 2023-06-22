@@ -21,20 +21,24 @@ source ~/.bashrc
 
 ## Usage examples
 
-```
-ptvulnsearcher -s "Apache Tomcat"             # Search CVE for the specified string
-ptvulnsearcher -cve CVE-2022-29885            # Search specified CVE
+```         
+ptvulnsearcher -cve CVE-2022-29885           
+ptvulnsearcher -vn Redhat                     
+ptvulnsearcher -pn linux                      
+ptvulnsearcher -vn Redhat -pn linux           
+ptvulnsearcher -vn Redhat -pn linux -pv 9.0  
+ptvulnsearcher -pn linux -pv 9.0              
 ```
 
 ## Options
 ```
-   -cve  --cve              <CVE ID>           Search based on CVE ID
-   -vn   --vendor_name      <vendor_name>      Search based on vendor name
-   -pn   --product_name     <product_name>     Search based on product name
-   -pv   --product_version  <product_version>  Search based on product version
-   -j    --json                                Output in JSON format
-   -v    --version                             Show script version and exit
-   -h    --help                                Show this help message and exit
+   -cve  --cve              <CVE ID>            Search based on CVE
+   -vn   --vendor_name      <vendor_name>       Search based on vendor
+   -pn   --product_name     <product_name>      Search based on product
+   -pv   --product_version  <product_version>   Search based on product version
+   -j    --json                                 Output in JSON format
+   -v    --version                              Show script version and exit
+   -h    --help                                 Show this help message and exit
 ```
 
 ## Dependencies
