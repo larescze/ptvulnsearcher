@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-
 __version__ = "0.0.2"
-from ptlibs import ptjsonlib, ptmisclib
+from ptlibs import ptjsonlib, ptmisclib, ptprinthelper
 import argparse
 import sys
 import requests
@@ -10,6 +9,7 @@ import logging
 from dotenv import load_dotenv
 from pathlib import Path  
 import os
+
 
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -21,14 +21,14 @@ BASE_URL = "http://%s:%s/api/v1/" % (IP_ADDRESS, PORT)
 class ptvulnsearcher:
     def __init__(self, args):
         logging.disable(logging.CRITICAL) #Disabling all logging =< CRITICAL
-        self.ptjsonlib = ptjsonlib.ptjsonlib(args.json)
-        self.json_no = self.ptjsonlib.add_json("ptvulnsearcher")
+        self.ptjsonlib = ptjsonlib.PtJsonLib(args.json)
+        self.json_no = self.ptjsonlib.get_result_json()
         self.use_json = args.json
         self.args = args
 
     def load_json_data(self,vulns):
         vulns = json.loads(vulns) 
-        ptmisclib.ptprint(ptmisclib.out_ifnot(
+        ptprinthelper.ptprint(ptprinthelper.out_ifnot(
             f"Found {len(vulns)} CVE Records", "INFO", self.use_json))
         for vuln in vulns:
             cveid = vuln["cve_id"]
@@ -40,27 +40,27 @@ class ptvulnsearcher:
             product_type = vuln["product_type"]
             product_name = vuln["product_name"]
             version = vuln["version"]
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f" ", "", self.use_json))
-            ptmisclib.ptprint(ptmisclib.out_title_ifnot(
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f" ", "", self.use_json))
+            ptprinthelper.ptprint(ptprinthelper.out_title_ifnot(
                 f"{cveid}", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Vector: ", color="TITLE")} {cvss_vector}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("CVSS Score: ", color="TITLE")} {cvss_score}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Description: ", color="TITLE")} {desc}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Vendor: ", color="TITLE")} {vendor}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product name: ", color="TITLE")} {product_name}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Product type: ", color="TITLE")} {product_type}', "", self.use_json))
-            ptmisclib.ptprint(
-                ptmisclib.out_ifnot(f'{ptmisclib.get_colored_text("Version: ", color="TITLE")} {version}', "", self.use_json))
-        ptmisclib.ptprint(ptmisclib.out_if(self.ptjsonlib.get_all_json(), "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Cwe ID: ", color="TITLE")} {cwe}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("CVSS Vector: ", color="TITLE")} {cvss_vector}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("CVSS Score: ", color="TITLE")} {cvss_score}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Description: ", color="TITLE")} {desc}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Vendor: ", color="TITLE")} {vendor}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Product name: ", color="TITLE")} {product_name}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Product type: ", color="TITLE")} {product_type}', "", self.use_json))
+            ptprinthelper.ptprint(
+                ptprinthelper.out_ifnot(f'{ptprinthelper.get_colored_text("Version: ", color="TITLE")} {version}', "", self.use_json))
+        ptprinthelper.ptprint(ptprinthelper.out_if(self.ptjsonlib.get_result_json(), "", self.use_json))
         sys.exit(0)
                   
     def run(self):
@@ -129,10 +129,10 @@ def parse_args():
     parser.add_argument("-h","--help", action="store", help=get_help())
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
-        ptmisclib.help_print(get_help(), SCRIPTNAME, __version__)
+        ptprinthelper.help_print(get_help(), SCRIPTNAME, __version__)
         sys.exit(0)
     args = parser.parse_args()
-    ptmisclib.print_banner(SCRIPTNAME, __version__, args.json)
+    ptprinthelper.print_banner(SCRIPTNAME, __version__, args.json)
     return args
 
 def main():
