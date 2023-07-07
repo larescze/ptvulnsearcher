@@ -6,18 +6,11 @@ import sys
 import requests
 import json
 import logging
-from dotenv import load_dotenv
 from pathlib import Path  
 import os
 
-
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
-IP_ADDRESS = os.getenv("IP")
-PORT = os.getenv("PORT")
-
-BASE_URL = "http://%s:%s/api/v1/" % (IP_ADDRESS, PORT)
-
+#BASE_URL = "http://%s:%s/api/v1/" % (IP_ADDRESS, PORT)
+BASE_URL = "https://cve.penterep.com/api/v1/"
 class ptvulnsearcher:
     def __init__(self, args):
         logging.disable(logging.CRITICAL) #Disabling all logging =< CRITICAL
@@ -111,7 +104,7 @@ def get_help():
         }]
 
 def search_cve(search_string, search_cve):
-    api_url = "https://as.penterep.com:8443/api/v1/cve/search"
+    api_url = "https://cve.penterep.com/api/v1/"
     parameters = {"search": search_string, "cve": search_cve}
     response = requests.get(api_url, params=parameters)
     response_json = response.json()
